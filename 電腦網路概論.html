@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>OSI 七層模型筆記卡 — 協定功能詳解 + PDU 與除錯</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fdfcf9; --line:#eee; --fg:#222; --muted:#666;
+    --c7:#0ea5e9; --c6:#22c55e; --c5:#a855f7; --c4:#f59e0b; --c3:#ef4444; --c2:#06b6d4; --c1:#94a3b8;
+    --warn:#ef4444; --ok:#16a34a;
+  }
+  body{
+    font-family:'Patrick Hand',cursive;
+    background:repeating-linear-gradient(var(--bg) 0 31px,var(--line) 31px 32px);
+    color:var(--fg); margin:0; padding:40px; line-height:32px;
+  }
+  h1{text-align:center;font-size:3em;margin-bottom:10px;}
+  p.sub{text-align:center;color:var(--muted);margin:0 0 30px 0;}
+  .card{border:2px solid #ddd;border-radius:12px;padding:18px 20px;margin:16px 0;background:#fff;box-shadow:0 6px 16px rgba(0,0,0,0.05)}
+  .head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .dot{width:12px;height:12px;border-radius:50%}
+  .c7{background:var(--c7)}.c6{background:var(--c6)}.c5{background:var(--c5)}.c4{background:var(--c4)}.c3{background:var(--c3)}.c2{background:var(--c2)}.c1{background:var(--c1)}
+  .title{font-size:1.6em;font-weight:bold}
+  ul.note{list-style:none;margin:8px 0 0;padding:0}
+  ul.note li{display:flex;gap:10px;margin:6px 0}
+  .label{min-width:4.5em;font-weight:bold;color:#333}
+  .label::after{content:"："}
+  .text{flex:1}
+  .protocol-detail{margin-left:2em;color:#444;font-size:0.95em;line-height:28px;}
+  .troubleshoot{border-left:4px solid #ddd;padding-left:12px;margin-top:10px;color:#333}
+  .troubleshoot .t-title{font-weight:bold;margin-bottom:4px}
+  .t-good{color:var(--ok)}
+  .t-bad{color:var(--warn)}
+  .footer{text-align:right;font-size:0.9em;color:var(--muted);margin-top:40px}
+  code{background:#f6f6f6;padding:2px 6px;border-radius:6px}
+</style>
+</head>
+<body>
+  <h1>OSI 七層模型筆記卡（含協定功能詳解 + PDU 與除錯）</h1>
+  <p class="sub">每層重點功能、協定用途、PDU 名稱與除錯指引，支援由上到下或由下到上排障。</p>
+
+  <section class="card">
+    <div class="head"><span class="dot c7"></span><div class="title">第七層：應用層 (Application Layer)</div></div>
+    <ul class="note">
+      <li><span class="label">功能</span><span class="text">提供最終應用服務介面（瀏覽、檔案、郵件、名稱解析）。</span></li>
+      <li><span class="label">協定</span><span class="text">HTTP/HTTPS、FTP、SMTP、POP3/IMAP、DNS、SSH、Telnet、SNMP、NTP、LDAP、RDP、MQTT</span></li>
+      <li><span class="label">PDU</span><span class="text">Data（應用資料）</span></li>
+    </ul>
+    <div class="protocol-detail">
+      <p><strong>HTTP/HTTPS：</strong>用於網頁傳輸，HTTPS 加入 TLS 加密確保安全。</p>
+      <p><strong>FTP：</strong>用於檔案上傳與下載，FTPS 支援加密。</p>
+      <p><strong>SMTP：</strong>郵件傳送協定，搭配 POP3 或 IMAP 收信。</p>
+      <p><strong>DNS：</strong>將網域名稱解析成 IP 位址。</p>
+      <p><strong>SSH：</strong>安全遠端終端登入協定。</p>
+      <p><strong>Telnet：</strong>明文遠端登入（現多被 SSH 取代）。</p>
+      <p><strong>SNMP：</strong>網路設備監控管理（流量、溫度、狀態）。</p>
+      <p><strong>NTP：</strong>網路時間同步。</p>
+      <p><strong>LDAP：</strong>集中帳號管理與查詢（常用於 AD）。</p>
+      <p><strong>RDP：</strong>遠端桌面協定。</p>
+      <p><strong>MQTT：</strong>物聯網訊息傳遞，輕量、高效。</p>
+    </div>
+    <div class="troubleshoot">
+      <div class="t-title">除錯建議</div>
+      <p>症狀：網站打不開、API 500/401、收發信失敗、DNS 解析錯誤、遠端登入失敗。</p>
+      <p>檢查：服務是否啟動與存取控制、應用層日誌、DNS 記錄、TLS 憑證與 SNI、帳密與授權。</p>
+      <p>工具：<code>curl -v</code>、<code>telnet/ssh</code>、<code>nslookup/dig</code>、<code>openssl s_client</code>、<code>netstat</code>、<code>Wireshark</code>。</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="head"><span class="dot c6"></span><div class="title">第六層：表示層 (Presentation Layer)</div></div>
+    <ul class="note">
+      <li><span class="label">功能</span><span class="text">資料呈現與安全：編碼、轉碼、壓縮、加解密。</span></li>
+      <li><span class="label">協定</span><span class="text">TLS/SSL、MIME/Content-Type、Gzip/Brotli、UTF-8</span></li>
+      <li><span class="label">PDU</span><span class="text">Data（格式化/加密後資料）</span></li>
+    </ul>
+    <div class="protocol-detail">
+      <p><strong>TLS/SSL：</strong>提供端對端加密，確保傳輸資料機密性與完整性。</p>
+      <p><strong>MIME：</strong>定義電子郵件與 HTTP 資料格式類型。</p>
+      <p><strong>Gzip/Brotli：</strong>壓縮資料減少傳輸時間。</p>
+      <p><strong>UTF-8：</strong>通用文字編碼，避免亂碼。</p>
+    </div>
+    <div class="troubleshoot">
+      <div class="t-title">除錯建議</div>
+      <p>症狀：亂碼、解密失敗、TLS 版本/套件不相容、Content-Type 錯誤。</p>
+      <p>檢查：TLS 版本與 Cipher、證書信任鏈與有效期、Content-Type/Encoding 是否正確、壓縮與字元編碼設定。</p>
+      <p>工具：<code>openssl s_client</code>、<code>Wireshark</code>（解析 TLS handshake/ALPN）、「開發者工具」檢查回應標頭與編碼。</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="head"><span class="dot c5"></span><div class="title">第五層：會話層 (Session Layer)</div></div>
+    <ul class="note">
+      <li><span class="label">功能</span><span class="text">建立、維持與終止會話，處理同步與檢查點。</span></li>
+      <li><span class="label">協定</span><span class="text">RPC、NetBIOS Session、SIP、gRPC</span></li>
+      <li><span class="label">PDU</span><span class="text">Data（會話控制訊息）</span></li>
+    </ul>
+    <div class="protocol-detail">
+      <p><strong>RPC：</strong>遠端程序呼叫，讓一台電腦執行另一台的函數。</p>
+      <p><strong>gRPC：</strong>基於 HTTP/2 的高效 RPC 框架。</p>
+      <p><strong>SIP：</strong>用於建立、維護與結束 VoIP 通話或視訊會議。</p>
+      <p><strong>NetBIOS Session：</strong>舊式 Windows 檔案/印表分享通訊。</p>
+    </div>
+    <div class="troubleshoot">
+      <div class="t-title">除錯建議</div>
+      <p>症狀：會話無法建立/頻繁斷線、重試/超時、雙向串流中斷。</p>
+      <p>檢查：握手機制、保活/心跳、重試與超時、負載平衡保持連線設定、HTTP/2 流量限制與 RST 流原因。</p>
+      <p>工具：<code>grpcurl</code>、<code>ss</code>/<code>netstat</code>、<code>tcpdump/Wireshark</code>（追握手與 keepalive）。</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="head"><span class="dot c4"></span><div class="title">第四層：傳輸層 (Transport Layer)</div></div>
+    <ul class="note">
+      <li><span class="label">功能</span><span class="text">端對端連線、分段/重組、流控與擁塞管理。</span></li>
+      <li><span class="label">協定</span><span class="text">TCP、UDP、SCTP</span></li>
+      <li><span class="label">PDU</span><span class="text">TCP Segment / UDP Datagram；SCTP Chunk/Association</span></li>
+    </ul>
+    <div class="protocol-detail">
+      <p><strong>TCP：</strong>提供可靠、有序、具錯誤檢測的連線導向傳輸（如 HTTP、FTP）。</p>
+      <p><strong>UDP：</strong>無連線、低延遲、不保證順序，適合即時應用（如 DNS、VoIP、遊戲）。</p>
+      <p><strong>SCTP：</strong>支援多串流與多宿主，常用於電信系統。</p>
+      <p><em>備註：</em>TCP 段包含來源/目的埠、序號、確認號、視窗大小、檢查碼等欄位；UDP datagram 標頭精簡含埠、長度、檢查碼。</p>
+    </div>
+    <div class="troubleshoot">
+      <div class="t-title">除錯建議</div>
+      <p>症狀：連線建立/三向交握失敗、重傳高、RTO 上升、丟包、亂序、MTU/碎片化問題。</p>
+      <p>檢查：SYN/SYN-ACK/ACK、RST/FIN、視窗大小、MSS/MTU、丟包與延遲、QoS/防火牆 ACL、UDP 是否被限流或丟棄。</p>
+      <p>工具：<code>tcpdump/Wireshark</code>、<code>ss -tuna</code>/<code>netstat</code>、<code>traceroute</code>、<code>path MTU</code> 測試、<code>iperf3</code>。</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="head"><span class="dot c3"></span><div class="title">第三層：網路層 (Network Layer)</div></div>
+    <ul class="note">
+      <li><span class="label">功能</span><span class="text">邏輯位址、子網與路由、ICMP 診斷。</span></li>
+      <li><span class="label">協定</span><span class="text">IPv4/IPv6、ICMP、OSPF、BGP、RIP、IS-IS、IPSec、ARP</span></li>
+      <li><span class="label">PDU</span><span class="text">Packet / Datagram（IP 封包）</span></li>
+    </ul>
+    <div class="protocol-detail">
+      <p><strong>IP：</strong>提供邏輯位址與封包轉送。</p>
+      <p><strong>ICMP：</strong>錯誤回報與診斷（ping、traceroute）。</p>
+      <p><strong>ARP：</strong>IP 轉換成 MAC 位址。</p>
+      <p><strong>OSPF：</strong>內部網路動態路由協定，根據鏈路狀態建立最短路徑。</p>
+      <p><strong>BGP：</strong>網際網路邊界路由協定，用於 ISP 間路由。</p>
+      <p><strong>RIP：</strong>距離向量路由協定（跳數），現較少用。</p>
+      <p><strong>IPSec：</strong>在 IP 層提供加密與驗證（VPN）。</p>
+    </div>
+    <div class="troubleshoot">
+      <div class="t-title">除錯建議</div>
+      <p>症狀：無法到達遠端、路由黑洞、TTL 到期、回程路徑異常、VPN 無法建立。</p>
+      <p>檢查：IP/子網/閘道設定、路由表、ACL/NAT、ICMP 封鎖、BGP/OSPF 鄰居關係與前綴、IPSec 政策與 SA。</p>
+      <p>工具：<code>ping</code>、<code>traceroute/tracert</code>、<code>ipconfig/ifconfig</code>、<code>route/ip route</code>、<code>nslookup/dig</code>、<code>Wireshark</code>。</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="head"><span class="dot c2"></span><div class="title">第二層：資料連結層 (Data Link Layer)</div></div>
+    <ul class="note">
+      <li><span class="label">功能</span><span class="text">成框、MAC/LLC、同網段交換、VLAN/聚合。</span></li>
+      <li><span class="label">協定</span><span class="text">Ethernet 802.3、LLC/MAC、VLAN 802.1Q、STP/RSTP/MSTP、LACP</span></li>
+      <li><span class="label">PDU</span><span class="text">Frame（乙太網路影格）</span></li>
+    </ul>
+    <div class="protocol-detail">
+      <p><strong>Ethernet：</strong>區域網路資料傳輸標準。</p>
+      <p><strong>VLAN：</strong>將實體網路切分成多個邏輯區域。</p>
+      <p><strong>STP：</strong>防止交換迴圈的協定。</p>
+      <p><strong>LACP：</strong>鏈路聚合，提升頻寬與備援。</p>
+    </div>
+    <div class="troubleshoot">
+      <div class="t-title">除錯建議</div>
+      <p>症狀：同網段不通、VLAN 無法跨通、MAC 漂移、環路導致廣播風暴、Port flapping。</p>
+      <p>檢查：VLAN 標記/Trunk 設定、STP 拓樸與阻塞埠、LACP 同步、介面錯誤計數（CRC/drop）、ARP/MAC 表。</p>
+      <p>工具：交換器 <code>show mac address-table</code>、<code>show interface</code>、<code>arp -a</code>、<code>Wireshark</code>（VLAN tag、重傳、重放）。</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="head"><span class="dot c1"></span><div class="title">第一層：實體層 (Physical Layer)</div></div>
+    <ul class="note">
+      <li><span class="label">功能</span><span class="text">位元傳送、電氣/光學規格、介面與距離限制。</span></li>
+      <li><span class="label">協定</span><span class="text">媒介/介面規格：UTP/STP、同軸、光纖、RJ45/LC。</span></li>
+      <li><span class="label">PDU</span><span class="text">Bits（位元流）</span></li>
+    </ul>
+    <div class="protocol-detail">
+      <p><strong>UTP/STP：</strong>非遮蔽/遮蔽雙絞線，傳遞電信號。</p>
+      <p><strong>光纖：</strong>以光脈衝傳輸資料，速度快、干擾低。</p>
+      <p><strong>RJ45/LC：</strong>銅纜與光纖常用接頭。</p>
+    </div>
+    <div class="troubleshoot">
+      <div class="t-title">除錯建議</div>
+      <p>症狀：連線燈號不亮/忽明忽暗、速度自降、巨量 CRC、間歇性斷線。</p>
+      <p>檢查：線材長度與規格、接頭壓接、模組/收發器、電源與干擾、介面速率/雙工協商、SFP/DDM 光功率。</p>
+      <p>工具：實體檢視、線纜測試儀、<code>show interface</code> 錯誤統計、交換器燈號、環境雜訊檢查。</p>
+    </div>
+  </section>
+
+  <p class="sub">備註：Hub 屬於 L1；Switch 屬於 L2；Router 屬於 L3。可由 L1→L7 或 L7→L1 逐層定位問題。</p>
+
+  <div class="footer">For more notes: www.reallygreatsite.com</div>
+</body>
+</html>
