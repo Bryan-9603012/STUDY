@@ -1,0 +1,2690 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>Linux 精華教學：第一～三十章</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Consolas&display=swap" rel="stylesheet">
+  <style>
+    /* ======= 全域設定 ======= */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Consolas', 'Courier New', monospace;
+      background: radial-gradient(circle at top, #0d0d1a 0%, #000 100%);
+      color: #e0e0e0;
+      overflow-x: hidden;
+    }
+
+    h1, h2 {
+      font-family: 'Orbitron', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+      z-index: 2;
+    }
+
+    h1 {
+      text-align: center;
+      color: #00ffff;
+      margin-top: 40px;
+      text-shadow: 0 0 15px #00ffff;
+    }
+
+    /* ======= 章節卡片 ======= */
+    .chapter-card {
+      background: rgba(20, 20, 40, 0.8);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 16px;
+      padding: 25px;
+      margin: 30px auto;
+      width: 85%;
+      max-width: 900px;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.15);
+      backdrop-filter: blur(6px);
+      position: relative;
+      z-index: 2;
+      transition: all 0.4s ease;
+    }
+
+    .chapter-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 35px rgba(0, 255, 255, 0.3);
+      border-color: rgba(0, 255, 255, 0.6);
+    }
+
+    /* ======= 標題霓虹效果 ======= */
+    .chapter-title {
+      color: #00ffff;
+      border-left: 4px solid #00ffff;
+      padding-left: 12px;
+      margin-bottom: 15px;
+      text-shadow: 0 0 8px #00ffff;
+    }
+
+    p, li {
+      line-height: 1.8;
+      color: #d0d0d0;
+    }
+
+    code {
+      background: rgba(0, 255, 255, 0.1);
+      color: #00ffff;
+      border-radius: 4px;
+      padding: 2px 5px;
+    }
+
+    pre {
+      background: rgba(0, 0, 20, 0.7);
+      border-left: 3px solid #00ffff;
+      padding: 10px;
+      border-radius: 6px;
+      box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.2);
+      overflow-x: auto;
+    }
+
+    /* ======= 發光邊框動畫 ======= */
+    .chapter-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      padding: 1px;
+      background: linear-gradient(135deg, #00ffff, #0077ff, #00ffff);
+      background-size: 300% 300%;
+      animation: neonGlow 6s linear infinite;
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      z-index: 1;
+    }
+
+    @keyframes neonGlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* ======= 頁尾 ======= */
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #00ffff;
+      font-family: 'Orbitron', sans-serif;
+      text-shadow: 0 0 10px #00ffff;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container my-4">
+    
+<!-- 第一章：Linux 結構 -->
+<section id="ch1" class="chapter-card">
+  <h2 class="chapter-title">第一章：Linux 結構</h2>
+
+  <p>Linux，如你可能已經知道的，是一個用於個人電腦、伺服器甚至行動裝置的作業系統。然而，Linux 在資安領域中更是一個基石，以其穩定性、彈性以及開源特性而聞名。在本章中，我們將介紹 Linux 的結構、歷史、哲學、架構及檔案系統層次—這些都是任何資安專業人員的基礎知識。你可以將這個章節想像成學開新車的第一堂駕訓課，了解整台車的組成及運作原理。</p>
+
+  <h3>什麼是 Linux？</h3>
+  <p>Linux 是一種作業系統，就像 Windows、macOS、iOS 或 Android。作業系統（OS）是一種管理電腦硬體資源的軟體，使軟體應用程式與硬體之間可以順利溝通。與其他作業系統不同，Linux 有許多不同的版本，稱為「發行版」（Distro），這些版本針對不同需求和偏好進行調整。</p>
+
+  <h3>歷史</h3>
+  <p>Linux 的誕生與多個重要事件息息相關。1970 年，Ken Thompson 與 Dennis Ritchie 發布了 Unix 作業系統。1977 年，Berkeley Software Distribution（BSD）發行，但因為包含 AT&T 擁有的 Unix 程式碼，開發受到訴訟限制。1983 年，Richard Stallman 發起 GNU 計畫，目標是打造自由的 Unix 類作業系統，並創立 GNU 通用公共授權（GPL）。</p>
+  <p>Linux 本身於 1991 年由芬蘭學生 Linus Torvalds 作為個人專案開始，目標是創建一個自由的作業系統核心（Kernel）。經過多年發展，Linux 核心從最初少量 C 程式碼，演變成擁有超過 2300 萬行程式碼、廣泛使用且採用 GPL v2 授權的作業系統。</p>
+  <p>Linux 有超過 600 種發行版，包括 Ubuntu、Debian、Fedora、OpenSUSE、elementary、Manjaro、Gentoo、RedHat 和 Linux Mint。Linux 通常被認為比其他作業系統更安全、更穩定、效能更高，並廣泛運行於伺服器、桌面、嵌入式系統，甚至 Android 智慧型手機上。</p>
+
+  <h3>哲學</h3>
+  <p>Linux 的哲學核心是簡單性、模組化與開放性。它提倡構建小型、單一功能的程式，並可透過組合完成複雜任務，提高效率與彈性。主要原則如下：</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>原則</th>
+        <th>說明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>一切皆檔案</td>
+        <td>所有系統服務的設定檔都以文字檔形式存放。</td>
+      </tr>
+      <tr>
+        <td>小型單一功能程式</td>
+        <td>Linux 提供多種工具，能組合協作完成工作。</td>
+      </tr>
+      <tr>
+        <td>程式鏈接完成複雜任務</td>
+        <td>不同工具可整合執行大型、複雜的操作，例如資料處理或篩選。</td>
+      </tr>
+      <tr>
+        <td>避免封閉的使用者介面</td>
+        <td>Linux 主要透過 Shell（終端機）運作，給使用者更高控制權。</td>
+      </tr>
+      <tr>
+        <td>設定資料存文字檔</td>
+        <td>例如 /etc/passwd 檔案存放所有使用者資訊。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>元件</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>元件</th>
+        <th>說明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>啟動程式（Bootloader）</td>
+        <td>引導系統啟動作業系統的程式（Parrot OS 使用 GRUB）。</td>
+      </tr>
+      <tr>
+        <td>作業系統核心（Kernel）</td>
+        <td>管理硬體資源與系統 I/O 的核心元件。</td>
+      </tr>
+      <tr>
+        <td>守護程式（Daemons）</td>
+        <td>背景服務，確保排程、列印、多媒體等功能正常。</td>
+      </tr>
+      <tr>
+        <td>作業系統 Shell</td>
+        <td>命令列介面（CLI），讓使用者與 OS 溝通。常見 Shell：Bash、Tcsh/Csh、Ksh、Zsh、Fish。</td>
+      </tr>
+      <tr>
+        <td>圖形伺服器</td>
+        <td>提供圖形子系統（X-server），可在本地或遠端執行圖形程式。</td>
+      </tr>
+      <tr>
+        <td>視窗管理器（GUI）</td>
+        <td>桌面與應用程式的圖形介面，例如 GNOME、KDE、MATE、Unity。</td>
+      </tr>
+      <tr>
+        <td>工具程式（Utilities）</td>
+        <td>執行特定功能的應用程式。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Linux 架構</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>層級</th>
+        <th>說明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>硬體</td>
+        <td>包含 RAM、硬碟、CPU 等周邊設備。</td>
+      </tr>
+      <tr>
+        <td>核心（Kernel）</td>
+        <td>Linux 核心控制硬體資源，並為各進程提供虛擬化資源。</td>
+      </tr>
+      <tr>
+        <td>Shell</td>
+        <td>命令列介面，用戶可透過它執行核心功能。</td>
+      </tr>
+      <tr>
+        <td>系統工具程式（System Utility）</td>
+        <td>提供使用者對作業系統功能的操作。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>檔案系統層次</h3>
+  <p>Linux 採用樹狀結構檔案系統，遵循檔案系統層次標準（FHS）。主要目錄如下：</p>
+  <table>
+    <thead>
+      <tr>
+        <th>路徑</th>
+        <th>說明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>/</td><td>根目錄，包含啟動 OS 所需檔案及其他檔案系統的掛載點。</td></tr>
+      <tr><td>/bin</td><td>必要的命令執行檔。</td></tr>
+      <tr><td>/boot</td><td>啟動程式、核心執行檔及啟動所需檔案。</td></tr>
+      <tr><td>/dev</td><td>硬體裝置存取檔案。</td></tr>
+      <tr><td>/etc</td><td>系統與應用程式設定檔。</td></tr>
+      <tr><td>/home</td><td>使用者資料目錄。</td></tr>
+      <tr><td>/lib</td><td>系統啟動所需共用函式庫。</td></tr>
+      <tr><td>/media</td><td>可移動媒體掛載點，如 USB。</td></tr>
+      <tr><td>/mnt</td><td>臨時掛載點。</td></tr>
+      <tr><td>/opt</td><td>第三方軟體或選用工具。</td></tr>
+      <tr><td>/root</td><td>超級使用者（root）的主目錄。</td></tr>
+      <tr><td>/sbin</td><td>系統管理用執行檔。</td></tr>
+      <tr><td>/tmp</td><td>臨時檔案目錄，開機時通常清空。</td></tr>
+      <tr><td>/usr</td><td>程式執行檔、函式庫及手冊檔。</td></tr>
+      <tr><td>/var</td><td>可變資料，例如日誌、信箱、排程檔等。</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 第二章：Linux 發行版 -->
+<section id="ch2" class="chapter-card">
+  <h2 class="chapter-title">第二章：Linux 發行版</h2>
+
+  <p>Linux 發行版（或稱 Distro）是基於 Linux 核心的作業系統。它們用途多樣，從伺服器、嵌入式裝置到桌面電腦與行動裝置都能使用。Linux 發行版就像同一家公司下的不同分支或加盟店，每個分支針對特定市場或用戶需求進行調整。雖然它們共享相同的核心元件（components）、架構（architecture）與哲學（philosophy），但每個發行版都有其獨特的軟體包與設定，為不同需求提供客製化體驗——同時遵循 Linux 的統一品牌與價值觀。</p>
+
+  <p>每個 Linux 發行版都不同，擁有各自的功能、套件與工具。一些常見的發行版包括：</p>
+  <ul>
+    <li>Ubuntu</li>
+    <li>Fedora</li>
+    <li>CentOS</li>
+    <li>Debian</li>
+    <li>Red Hat Enterprise Linux</li>
+  </ul>
+
+  <p>許多使用者選擇 Linux 作為桌面系統，因為它免費、開源且高度可自訂。Ubuntu 與 Fedora 是桌面與新手 Linux 的熱門選擇。Linux 也被廣泛用於伺服器，因為它安全、穩定、可靠且定期更新。對於資安專家而言，我們偏好 Linux 的原因在於它是開源的，程式碼可供檢視與自訂。這樣我們可以針對特定需求最佳化與設定 Linux 發行版。</p>
+
+  <p>Linux 發行版的使用範圍極廣，包括網頁伺服器、行動裝置、嵌入式系統、雲端運算與桌面電腦。對資安專家而言，一些熱門的 Linux 發行版包括（但不限於）：</p>
+  <table>
+    <thead>
+      <tr>
+        <th>發行版</th>
+        <th>用途或特色</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>ParrotOS</td><td>資安專用、隱私與開發導向</td></tr>
+      <tr><td>Ubuntu</td><td>桌面與新手友好</td></tr>
+      <tr><td>Debian</td><td>穩定可靠，適合伺服器與嵌入式</td></tr>
+      <tr><td>Raspberry Pi OS</td><td>嵌入式系統與教育用途</td></tr>
+      <tr><td>CentOS</td><td>企業級伺服器</td></tr>
+      <tr><td>BackBox</td><td>資安專用</td></tr>
+      <tr><td>BlackArch</td><td>資安專用</td></tr>
+      <tr><td>Pentoo</td><td>資安專用</td></tr>
+    </tbody>
+  </table>
+
+  <p>不同 Linux 發行版的主要差異在於預設套件、使用者介面與可用工具。Kali Linux 是資安專家最常用的發行版，內建大量安全工具與套件。Ubuntu 在桌面使用者間很普及，而 Debian 則在伺服器與嵌入式系統中廣受歡迎。Red Hat Enterprise Linux 與 CentOS 則多用於企業級計算環境。</p>
+
+  <h3>Debian</h3>
+  <p>Debian 是廣受好評的 Linux 發行版，以穩定性與可靠性著稱，用途包括桌面電腦、伺服器及嵌入式系統。它使用 Advanced Package Tool（apt）套件管理系統來處理軟體更新與安全修補程式。套件管理系統可自動下載並安裝安全更新，保持系統最新且安全，也可手動操作。</p>
+
+  <p>Debian 的學習曲線可能比其他發行版稍陡，但它被認為是最靈活、可自訂性最高的 Linux 發行版之一。設定與安裝可能較複雜，但它提供對系統的高度控制，對進階使用者非常有利。雖然初學者會感覺繁瑣，但一旦掌握基本指令與工具，操作效率反而更高。</p>
+
+  <p>Debian 的穩定性與可靠性是其核心優勢。它的長期支援（LTS）版本可提供長達五年的更新與安全修補，對 24/7 伺服器尤為重要。Debian 的開發社群在發現漏洞後會迅速釋出修補程式，並且對安全與隱私有高度承諾。總體而言，Debian 是一個多用途、可靠且安全的 Linux 發行版，對各種用途，包括資安工作，都非常適合。</p>
+</section>
+
+    
+<!-- 第三章：Shell 介紹 -->
+<section id="ch3" class="chapter-card">
+  <h2 class="chapter-title">第三章：Shell 介紹</h2>
+
+  <p>學習如何使用 Linux Shell 非常重要，因為許多伺服器都是基於 Linux 的。Linux 伺服器通常比 Windows 伺服器更穩定且更少出錯，例如許多網站伺服器都基於 Linux。要有效地控制作業系統，必須理解並掌握 Linux 的核心部分——Shell。</p>
+
+  <p>Linux 終端機，也稱為 Shell 或命令列，提供使用者與核心之間的文字輸入/輸出 (I/O) 介面。雖然「Console」一詞也常被使用，但它指的是文字模式的螢幕，而不是視窗。在終端機視窗中，我們可以執行指令來控制系統。</p>
+
+  <p>可以把 Shell 想像成一個文字化的 GUI，我們透過輸入指令來執行操作，例如切換目錄、管理檔案、取得系統資訊等，而且功能遠超過一般 GUI。</p>
+
+  <h3>終端機模擬器</h3>
+  <p>終端機模擬器是模擬終端機功能的軟體，它允許在圖形使用者介面 (GUI) 中使用文字程式。此外，也存在在一個終端機內運行額外終端機的命令列介面 (CLI)。簡單來說，終端機是與 Shell 互動的介面。</p>
+
+  <p>可以想像你在一棟大辦公大樓中，Shell 是主要的伺服器機房，負責處理所有公司的資料與指令。終端機就像接待處，你透過接待處（終端機）向伺服器機房（Shell）發送指令或請求。</p>
+
+  <p>如果你在遠端工作，終端機模擬器就像電腦螢幕上的虛擬接待處（GUI），讓你不必親自到辦公室，也能與伺服器機房互動。它模擬實際接待處的功能，允許在圖形環境中使用文字程式與指令。</p>
+
+  <p>另外，在單一終端機內運行的多個 CLI 就像在螢幕上同時打開多個虛擬接待處，每個接待處都可以獨立傳送指令到伺服器機房，但仍共用同一主介面。本質上，終端機是與 Shell 核心操作溝通與控制的入口。</p>
+
+  <p>終端機模擬器與多工器（Multiplexer）是終端機的有用擴充功能，提供分割視窗、在多個目錄操作、建立不同工作區等多種方法與功能。例如，多工器 Tmux 的使用可以將終端機分成多個窗格，同時管理不同目錄：</p>
+  <p>（範例：三個窗格分別顯示 BloodHound、Impacket、SecLists 目錄，位於使用者主目錄 'cry0l1t3' 的 'master' 分支）</p>
+
+  <h3>Shell</h3>
+  <p>Linux 最常用的 Shell 是 Bourne-Again Shell（BASH），它是 GNU 專案的一部分。透過 Shell，我們可以執行 GUI 可以完成的操作，並能以更快的方式與程式或流程互動。此外，許多流程可以透過撰寫小型或大型腳本自動化，大幅減少手動操作。</p>
+
+  <p>除了 Bash，還有其他 Shell，如 Tcsh/Csh、Ksh、Zsh、Fish Shell 等。</p>
+</section>
+
+    
+<!-- 第四章：提示符說明 -->
+<section id="ch4" class="chapter-card">
+  <h2 class="chapter-title">第四章：提示符說明</h2>
+
+  <p>Bash 提示符（Prompt）非常容易理解。預設情況下，它會顯示使用者名稱（你是誰）、電腦名稱（hostname）以及目前所在的資料夾/目錄。提示符是一行文字，顯示在螢幕上，告訴使用者系統已準備好接收指令。提示符出現在新行，游標（閃爍的線或方框）會緊跟其後，等待使用者輸入指令。</p>
+
+  <p>提示符可以自訂，以提供使用者更多有用的資訊。其格式可能如下：</p>
+  <pre>
+  <username>@<hostname><current working directory>$
+  </pre>
+  <p>使用者的主目錄以波浪號 <code>~</code> 表示，這是登入時的預設資料夾：</p>
+  <pre>
+  <username>@<hostname>[~]$
+  </pre>
+  <p>美元符號 <code>$</code> 表示普通使用者。如果以 root 登入，符號會變成井號 <code>#</code>，例如：</p>
+  <pre>
+  root@htb[/htb]#
+  </pre>
+
+  <p>例如，在目標系統上上傳並執行 shell 時，我們可能看不到使用者名稱、主機名稱與當前目錄。這通常是因為環境變數 PS1 未正確設定。在這種情況下，提示符可能顯示如下：</p>
+  <p>普通使用者 Shell 提示符：</p>
+  <pre>
+  $
+  </pre>
+  <p>管理員（root）Shell 提示符：</p>
+  <pre>
+  #
+  </pre>
+
+  <p>在 Linux 系統中，PS1 變數控制命令提示符在終端機中的顯示方式。它就像一個模板，每次系統準備好接收指令時，會依據這個模板顯示文字。透過自訂 PS1，可以讓提示符顯示使用者名稱、電腦名稱、目前資料夾，甚至加入顏色與特殊符號，讓命令列更具資訊性或美觀。</p>
+
+  <p>除了基本資訊，提示符還可以顯示 IP 位址、日期、時間，以及上一個命令的執行成功或失敗情況。這對於滲透測試特別有用，因為可以更有效地追蹤操作。例如，可以設定提示符顯示完整路徑而非僅名稱，甚至包含目標 IP 位址。使用 <code>script</code> 或查看使用者主目錄下的 <code>.bash_history</code>，可以記錄所有使用過的指令，並依日期時間整理，方便文件化與分析。</p>
+
+  <h3>特殊字元與變數</h3>
+  <p>提示符可透過 shell 的設定檔（例如 Bash 的 <code>.bashrc</code>）使用特殊字元與變數自訂。例如：</p>
+  <ul>
+    <li><code>\u</code>：當前使用者名稱</li>
+    <li><code>\h</code>：主機名稱</li>
+    <li><code>\w</code>：當前工作目錄完整路徑</li>
+  </ul>
+
+  <table>
+    <thead>
+      <tr>
+        <th>特殊字元</th>
+        <th>說明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>\d</td><td>日期（Mon Feb 6）</td></tr>
+      <tr><td>\D{%Y-%m-%d}</td><td>日期（YYYY-MM-DD）</td></tr>
+      <tr><td>\H</td><td>完整主機名稱</td></tr>
+      <tr><td>\j</td><td>Shell 管理的工作數量</td></tr>
+      <tr><td>\n</td><td>換行</td></tr>
+      <tr><td>\r</td><td>回車</td></tr>
+      <tr><td>\s</td><td>Shell 名稱</td></tr>
+      <tr><td>\t</td><td>24 小時制時間（HH:MM:SS）</td></tr>
+      <tr><td>\T</td><td>12 小時制時間（HH:MM:SS）</td></tr>
+      <tr><td>\@</td><td>當前時間（12 小時制）</td></tr>
+      <tr><td>\u</td><td>使用者名稱</td></tr>
+      <tr><td>\w</td><td>當前工作目錄完整路徑</td></tr>
+    </tbody>
+  </table>
+
+  <p>自訂提示符可以讓終端機使用更個人化，也更有效率。它在故障排除與問題解決上也很有用，能即時提供系統狀態資訊。</p>
+
+  <p>除了提示符，使用者還可以自訂終端機環境，例如色彩主題、字型等，使工作環境更美觀、易用。</p>
+
+  <p>儘管我們看到的與 Windows GUI 類似，我們知道使用者身份、電腦名稱與所在目錄。Bash 提示符也可以依需求自訂。調整 Bash 提示符超出本模組範圍，但可以參考 <code>bash-prompt-generator</code> 與 <code>powerline</code>，以滿足個人需求。</p>
+</section>
+
+    
+<!-- 第五章：尋求幫助 -->
+<section id="ch5" class="chapter-card">
+  <h2 class="chapter-title">第五章：尋求幫助</h2>
+
+  <p>在建立了 Linux 結構、各種發行版以及 Shell 的基礎知識之後，我們現在可以將這些知識付諸實踐。是時候直接在終端機中使用指令，並學習在遇到不熟悉的指令時，如何尋求幫助。</p>
+
+  <p>在使用 Linux 時，我們總會碰到一些工具，其可選參數不熟悉，或者完全沒見過的新工具。因此，了解如何自助尋求幫助、熟悉這些工具是非常重要的。最常用的兩種方式是：<strong>man 手冊頁</strong>和 <strong>help 功能</strong>。先熟悉工具的基本用法，能讓我們更有效地操作，並可能發現一些原本以為不可行的技巧。在 man 手冊中，我們可以找到詳細說明和範例。</p>
+
+  <h3>第一個範例指令</h3>
+  <pre>
+Bryan4698@htb[/htb]$ ls
+
+cacert.der  Documents  Music     Public     Videos
+Desktop     Downloads  Pictures  Templates
+  </pre>
+  <p>在 Linux 和 Unix 系統中，<code>ls</code> 指令用來列出當前資料夾或指定資料夾中的檔案與目錄，方便使用者管理。像大多數 Linux 指令一樣，<code>ls</code> 提供了額外選項，幫助使用者過濾或格式化輸出，顯示所需資訊。</p>
+
+  <h3>使用 man 指令尋求幫助</h3>
+  <p>要了解某個工具或指令提供哪些選項，可以使用 <code>man</code> 指令查看手冊頁：</p>
+  <pre>
+Bryan4698@htb[/htb]$ man <tool>
+  </pre>
+  <p>例如查看 <code>ls</code> 的手冊：</p>
+  <pre>
+Bryan4698@htb[/htb]$ man ls
+
+LS(1)                            User Commands                           LS(1)
+
+NAME
+       ls - 列出目錄內容
+
+SYNOPSIS
+       ls [OPTION]... [FILE]...
+
+DESCRIPTION
+       列出 FILE 的資訊（預設為當前目錄）。
+       若未指定 -cftuvSUX 或 --sort，則按字母排序。
+
+       長選項的必填參數同樣適用於短選項。
+
+       -a, --all
+              不忽略以 . 開頭的檔案
+
+       -A, --almost-all
+              不列出隱含的 . 和 ..
+
+       --author
+       ...
+  </pre>
+
+  <h3>使用 --help 或 -h 簡短幫助</h3>
+  <p>我們也可以快速查看指令可選參數，而不需完整瀏覽手冊：</p>
+  <pre>
+Bryan4698@htb[/htb]$ <tool> --help
+  </pre>
+  <p>例如：</p>
+  <pre>
+Bryan4698@htb[/htb]$ ls --help
+
+Usage: ls [OPTION]... [FILE]...
+列出 FILE 資訊（預設當前目錄）。
+排序依字母，若未指定 --sort 或其他選項。
+
+  -a, --all                  不忽略以 . 開頭的檔案
+  -A, --almost-all           不列出隱含的 . 和 ..
+      --author               使用 -l 時顯示每個檔案作者
+  -b, --escape               對非圖形字元使用 C 風格跳脫
+      --block-size=SIZE      使用 -l 時按 SIZE 調整大小
+  ...
+  </pre>
+  <p>有些工具，例如 <code>curl</code>，可以用 <code>-h</code> 替代 <code>--help</code> 取得簡短幫助：</p>
+  <pre>
+Bryan4698@htb[/htb]$ curl -h
+
+Usage: curl [options...] <url>
+     --abstract-unix-socket <path> 透過抽象 Unix socket 連線
+     --anyauth       自動選擇認證方式
+ -a, --append        上傳時附加到目標檔案
+     ...
+  </pre>
+
+  <h3>使用 apropos 搜尋相關指令</h3>
+  <p>另一個有用工具是 <code>apropos</>，它可以搜尋手冊頁中每個指令的簡短描述，找出包含指定關鍵字的指令：</p>
+  <pre>
+Bryan4698@htb[/htb]$ apropos <keyword>
+  </pre>
+  <p>例如查找 <code>sudo</code>：</p>
+  <pre>
+Bryan4698@htb[/htb]$ apropos sudo
+
+sudo (8)             - 以其他使用者身份執行指令
+sudo.conf (5)        - sudo 前端設定檔
+sudo_plugin (8)      - Sudo Plugin API
+sudo_root (8)        - 執行管理指令
+sudoedit (8)         - 以其他使用者身份編輯檔案
+sudoers (5)          - 預設 sudo 安全政策
+sudoreplay (8)       - 重放 sudo 操作紀錄
+visudo (8)           - 編輯 sudoers 檔案
+  </pre>
+
+  <p>如果要了解長指令的含義，還可以使用線上資源 <a href="https://explainshell.com/" target="_blank">https://explainshell.com/</a>。</p>
+
+  <p>接下來，我們將介紹大量指令，許多可能是新的。但現在，你已經知道如何尋求幫助，無論是不熟悉的指令，還是不確定的選項。我們也鼓勵你保持好奇心，花時間試驗這些工具，這將是一段值得投入的學習時間。</p>
+</section>
+
+
+<!-- 第六章：系統資訊 -->
+<section id="ch6" class="chapter-card">
+  <h2 class="chapter-title">第六章：系統資訊</h2>
+
+  <p>現在，我們來進行一些實際操作練習，以熟悉終端機和 Shell 的使用。請記住，如有需要，你可以隨時使用 <code>-h</code>、<code>--help</code> 或 <code>man</code> 指令來尋求幫助。</p>
+
+  <p>由於我們將操作各種 Linux 系統，因此了解其結構、系統資訊、進程、網路設定、使用者/使用者設定以及目錄及相關參數非常重要。以下列出一些收集系統資訊的常用工具，大多數工具預先安裝在系統中。這些知識不僅適用於日常 Linux 操作，也對評估安全設定、辨識漏洞或預防潛在安全風險非常重要：</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>指令</th>
+        <th>說明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>whoami</td><td>顯示目前使用者名稱</td></tr>
+      <tr><td>id</td><td>顯示使用者身份資訊</td></tr>
+      <tr><td>hostname</td><td>設定或顯示當前主機名稱</td></tr>
+      <tr><td>uname</td><td>顯示作業系統名稱及硬體資訊</td></tr>
+      <tr><td>pwd</td><td>顯示當前工作目錄名稱</td></tr>
+      <tr><td>ifconfig</td><td>設定或查看網路介面位址及參數</td></tr>
+      <tr><td>ip</td><td>管理路由、網路裝置、介面及隧道</td></tr>
+      <tr><td>netstat</td><td>顯示網路狀態</td></tr>
+      <tr><td>ss</td><td>檢查 socket</td></tr>
+      <tr><td>ps</td><td>顯示進程狀態</td></tr>
+      <tr><td>who</td><td>顯示誰已登入</td></tr>
+      <tr><td>env</td><td>列印環境變數或執行指令</td></tr>
+      <tr><td>lsblk</td><td>列出區塊裝置</td></tr>
+      <tr><td>lsusb</td><td>列出 USB 裝置</td></tr>
+      <tr><td>lsof</td><td>列出已開啟的檔案</td></tr>
+      <tr><td>lspci</td><td>列出 PCI 裝置</td></tr>
+    </tbody>
+  </table>
+
+  <h3>透過 SSH 登入</h3>
+  <p>SSH（Secure Shell）是一種協定，允許客戶端在遠端主機上執行指令或操作。Linux 及其他類 Unix 系統都預裝 SSH，它是系統管理員進行遠端管理的標準工具。SSH 不提供 GUI，因此資源消耗少且效率高。我們將在以下章節與實驗中使用這種連線，安全地練習操作指令。</p>
+
+  <pre>
+Bryan4698@htb[/htb]$ ssh htb-student@[IP 位址]
+  </pre>
+
+  <h3>Hostname 指令</h3>
+  <p><code>hostname</code> 指令會列出你登入的主機名稱：</p>
+  <pre>
+Bryan4698@htb[/htb]$ hostname
+
+nixfund
+  </pre>
+
+  <h3>Whoami 指令</h3>
+  <p>這個簡單指令可以顯示當前使用者名稱。在安全評估中，取得主機的反向 shell 後，第一步是確認我們以哪個使用者身分運行，從而判斷是否具有特權。</p>
+  <pre>
+cry0l1t3@htb[/htb]$ whoami
+
+cry0l1t3
+  </pre>
+
+  <h3>Id 指令</h3>
+  <p><code>id</code> 指令會顯示使用者的群組及身份資訊，有助於滲透測試人員或系統管理員確認權限與群組成員資格：</p>
+  <pre>
+cry0l1t3@htb[/htb]$ id
+
+uid=1000(cry0l1t3) gid=1000(cry0l1t3) groups=1000(cry0l1t3),1337(hackthebox),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),116(lpadmin),126(sambashare)
+  </pre>
+
+  <h3>Uname 指令</h3>
+  <p><code>uname</code> 指令用來顯示系統資訊，可搭配 <code>-a</code> 顯示完整資訊：</p>
+  <pre>
+cry0l1t3@htb[/htb]$ uname -a
+
+Linux box 4.15.0-99-generic #100-Ubuntu SMP Wed Apr 22 20:32:56 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux
+  </pre>
+  <p>輸出內容依序包含：核心名稱、主機名稱、核心版本、核心版本號、硬體名稱、作業系統等。若只需要特定資訊，可使用單獨選項，例如：</p>
+  <pre>
+cry0l1t3@htb[/htb]$ uname -r
+
+4.15.0-99-generic
+  </pre>
+  <p>我們可以使用這個資訊快速搜尋該核心版本可能的漏洞，例如「4.15.0-99-generic exploit」。</p>
+
+  <h3>練習建議</h3>
+  <p>建議詳細研究這些指令及其用途，了解它們能提供哪些資訊。雖然稍微繁瑣，但熟讀 man 手冊能讓你發現許多未知的功能，對日後尋找系統漏洞或權限升級非常重要。你可以透過附加練習題熟悉這些指令，逐步累積實務經驗。</p>
+
+  <h3>關於 Linux 練習</h3>
+  <p>Linux 練習題設計上可能一開始不會很明確該做什麼，這是正常的，也是一個學習過程的部分。透過逐步挑戰，你將逐漸拓展知識範圍，並提高熟練度與自信心。即使尚未完全解決問題，這也是學習進步的重要過程。</p>
+</section>
+
+
+<!-- 第七章：導覽與檔案操作 -->
+<section id="ch7" class="chapter-card">
+  <h2 class="chapter-title">第七章：導覽與檔案操作</h2>
+
+  <p>系統導覽是基本技能，就像 Windows 使用者使用滑鼠一樣。我們需要在系統中移動、操作目錄與檔案，因此需要使用各種指令來列出目錄或檔案資訊，並可使用進階選項優化顯示結果。</p>
+
+  <p>學習新技能最好的方式之一是透過實驗。本章將涵蓋 Linux 導覽、檔案與資料夾的建立、移動、編輯與刪除、搜尋、不同類型的重新導向、檔案描述符，以及一些提升 Shell 工作效率的快捷方式。我們建議在本地虛擬機上練習，並先建立快照以防系統意外損壞。</p>
+
+  <h3>當前目錄</h3>
+  <p>在系統中移動前，我們需要先知道自己所在的目錄，可使用 <code>pwd</code> 指令：</p>
+  <pre>
+cry0l1t3@htb[~]$ pwd
+
+/home/cry0l1t3
+  </pre>
+
+  <h3>列出目錄內容</h3>
+  <p>使用 <code>ls</code> 指令可以列出目錄下的檔案與資料夾：</p>
+  <pre>
+cry0l1t3@htb[~]$ ls
+
+Desktop  Documents  Downloads  Music  Pictures  Public  Templates  Videos
+  </pre>
+  <p>加上 <code>-l</code> 選項可以顯示更多資訊：</p>
+  <pre>
+cry0l1t3@htb[~]$ ls -l
+
+total 32
+drwxr-xr-x 2 cry0l1t3 htbacademy 4096 Nov 13 17:37 Desktop
+drwxr-xr-x 2 cry0l1t3 htbacademy 4096 Nov 13 17:34 Documents
+...
+  </pre>
+
+  <table>
+    <thead>
+      <tr>
+        <th>欄位</th>
+        <th>說明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>drwxr-xr-x</td><td>檔案/目錄類型與權限</td></tr>
+      <tr><td>2</td><td>硬連結數量</td></tr>
+      <tr><td>cry0l1t3</td><td>擁有者</td></tr>
+      <tr><td>htbacademy</td><td>群組擁有者</td></tr>
+      <tr><td>4096</td><td>檔案大小或目錄所佔區塊數</td></tr>
+      <tr><td>Nov 13 17:37</td><td>最後修改日期與時間</td></tr>
+      <tr><td>Desktop</td><td>檔案或目錄名稱</td></tr>
+    </tbody>
+  </table>
+
+  <p>要查看隱藏檔案（以 <code>.</code> 開頭的檔案），可以使用 <code>ls -la</code>：</p>
+  <pre>
+cry0l1t3@htb[~]$ ls -la
+
+total 403188
+drwxr-xr-x 2 cry0l1t3 htbacademy 4096 Nov 13 17:37 .bash_history
+drwxr-xr-x 2 cry0l1t3 htbacademy 4096 Nov 13 17:37 .bashrc
+...
+  </pre>
+
+  <h3>指定目錄列出內容</h3>
+  <p>不必切換到目錄也能列出內容，可指定路徑：</p>
+  <pre>
+cry0l1t3@htb[~]$ ls -l /var/
+
+total 52
+drwxr-xr-x  2 root root     4096 Mai 15 18:54 backups
+drwxr-xr-x 18 root root     4096 Nov 15 16:55 cache
+...
+  </pre>
+
+  <h3>切換目錄</h3>
+  <p>使用 <code>cd</code> 指令移動目錄，例如進入 <code>/dev/shm</code>：</p>
+  <pre>
+cry0l1t3@htb[~]$ cd /dev/shm
+cry0l1t3@htb[/dev/shm]$
+  </pre>
+  <p>回到上次所在目錄：</p>
+  <pre>
+cry0l1t3@htb[/dev/shm]$ cd -
+cry0l1t3@htb[~]$
+  </pre>
+
+  <h3>自動補全</h3>
+  <p>Shell 支援自動補全，輸入部分目錄名後按 <code>[TAB]</code> 可列出匹配項：</p>
+  <pre>
+cry0l1t3@htb[~]$ cd /dev/s [TAB 2x]
+
+shm/ snd/
+  </pre>
+
+  <h3>父目錄與清理終端機</h3>
+  <p><code>.</code> 表示當前目錄，<code>..</code> 表示父目錄，可使用 <code>cd ..</code> 回到父目錄：</p>
+  <pre>
+cry0l1t3@htb[/dev/shm]$ cd ..
+cry0l1t3@htb[/dev]$
+  </pre>
+  <p>清理終端機可以使用 <code>clear</code> 或快捷鍵 <code>[Ctrl] + [L]</code>，使用方向鍵可瀏覽歷史指令，使用 <code>[Ctrl] + [R]</code> 可搜尋歷史指令。</p>
+</section>
+
+
+<!-- 第八章：檔案與目錄操作 -->
+<section id="ch8" class="chapter-card">
+  <h2 class="chapter-title">第八章：檔案與目錄操作</h2>
+
+  <p>在 Linux 中操作檔案與 Windows 的主要差別在於存取與管理方式。在 Windows 中，我們通常使用圖形化工具（例如 Explorer）尋找、開啟與編輯檔案；而在 Linux 中，終端機提供了更強大的方式，可透過指令直接存取與編輯檔案。這種方式不僅更快，也更高效，甚至不需要像 vim 或 nano 這類編輯器。</p>
+
+  <p>終端機的效率在於只需幾個指令即可操作檔案，還能使用正則表達式選擇性修改檔案。此外，可同時執行多個指令，將輸出導向檔案，批次編輯檔案，對於同時處理大量檔案非常省時。這種命令列方式能簡化工作流程，對許多繁瑣的任務十分實用。</p>
+
+  <h3>建立、移動與複製檔案/目錄</h3>
+  <p>我們先學習建立、重新命名、移動、複製和刪除檔案與目錄。假設已透過 SSH 連線到目標主機。</p>
+
+  <p>建立檔案：<code>touch</code></p>
+  <pre>
+Bryan4698@htb[/htb]$ touch &lt;檔案名稱&gt;
+  </pre>
+
+  <p>建立目錄：<code>mkdir</code></p>
+  <pre>
+Bryan4698@htb[/htb]$ mkdir &lt;目錄名稱&gt;
+  </pre>
+
+  <p>範例：建立檔案 info.txt 與目錄 Storage</p>
+  <pre>
+Bryan4698@htb[/htb]$ touch info.txt
+Bryan4698@htb[/htb]$ mkdir Storage
+  </pre>
+
+  <p>建立多層目錄可使用 <code>-p</code> 選項：</p>
+  <pre>
+Bryan4698@htb[/htb]$ mkdir -p Storage/local/user/documents
+  </pre>
+
+  <p>檢視目錄結構：</p>
+  <pre>
+Bryan4698@htb[/htb]$ tree .
+
+.
+├── info.txt
+└── Storage
+    └── local
+        └── user
+            └── documents
+
+4 directories, 1 file
+  </pre>
+
+  <p>直接在指定路徑建立檔案：</p>
+  <pre>
+Bryan4698@htb[/htb]$ touch ./Storage/local/user/userinfo.txt
+Bryan4698@htb[/htb]$ tree .
+
+.
+├── info.txt
+└── Storage
+    └── local
+        └── user
+            ├── documents
+            └── userinfo.txt
+
+4 directories, 2 files
+  </pre>
+
+  <h3>移動與重新命名檔案/目錄</h3>
+  <p>使用 <code>mv</code> 指令可以移動或重新命名檔案/目錄：</p>
+  <pre>
+Bryan4698@htb[/htb]$ mv &lt;檔案/目錄&gt; &lt;新名稱/目標路徑&gt;
+  </pre>
+
+  <p>範例：將 info.txt 重新命名為 information.txt 並移至 Storage/ 目錄：</p>
+  <pre>
+Bryan4698@htb[/htb]$ mv info.txt information.txt
+  </pre>
+
+  <p>建立 readme.txt 並將檔案移到 Storage/：</p>
+  <pre>
+Bryan4698@htb[/htb]$ touch readme.txt
+Bryan4698@htb[/htb]$ mv information.txt readme.txt Storage/
+Bryan4698@htb[/htb]$ tree .
+
+.
+└── Storage
+    ├── information.txt
+    ├── local
+    │   └── user
+    │       ├── documents
+    │       └── userinfo.txt
+    └── readme.txt
+
+4 directories, 3 files
+  </pre>
+
+  <h3>複製檔案</h3>
+  <p>使用 <code>cp</code> 指令可以複製檔案：</p>
+  <pre>
+Bryan4698@htb[/htb]$ cp Storage/readme.txt Storage/local/
+Bryan4698@htb[/htb]$ tree .
+
+.
+└── Storage
+    ├── information.txt
+    ├── local
+    │   ├── readme.txt
+    │   └── user
+    │       ├── documents
+    │       └── userinfo.txt
+    └── readme.txt
+
+4 directories, 4 files
+  </pre>
+
+  <p>除了基本的檔案管理指令外，Linux 還能透過重新導向或文字編輯器操作檔案，使創建或修改檔案更加快速與高效。後續章節會更詳細介紹這些方法，熟練後可以靈活管理系統檔案。</p>
+
+  <h3>練習建議</h3>
+  <p>嘗試使用已學指令刪除檔案與目錄。記住，線上搜尋解決方案是學習的一部分，不是作弊。這可以讓你了解不同方法、擴展知識並找到最高效的解決方案。</p>
+</section>
+
+<!-- 第十章：編輯檔案 -->
+<section id="ch10" class="chapter-card">
+  <h2 class="chapter-title">第十章：編輯檔案</h2>
+
+  <p>學會建立檔案與目錄後，我們接下來要學習如何編輯檔案。在 Linux 中有多種方式可以編輯檔案，最常見的文字編輯器包括 Vi 與 Vim。但這裡我們先從較簡單、容易理解的 Nano 編輯器開始。</p>
+
+  <h3>Nano 編輯器</h3>
+  <p>使用 Nano 建立並編輯檔案，只需在啟動編輯器時指定檔案名稱。例如建立並開啟 notes.txt：</p>
+  <pre>
+Bryan4698@htb[/htb]$ nano notes.txt
+  </pre>
+
+  <p>Nano 提供簡單的介面，可以立即開始編輯文字。編輯介面下方有指令快捷鍵，符號 <code>^</code> 表示 [CTRL] 鍵，例如 [CTRL + W] 進行搜尋：</p>
+  <pre>
+^G Get Help    ^O Write Out   ^W Where Is    ^K Cut Text    ^J Justify     ^C Cur Pos     M-U Undo
+^X Exit        ^R Read File   ^\ Replace     ^U Uncut Text  ^T To Spell    ^_ Go To Line  M-E Redo
+  </pre>
+
+  <p>搜尋範例：在檔案中搜尋 "we"：</p>
+  <pre>
+^W Search → we → [ENTER]
+  </pre>
+
+  <p>儲存檔案：[CTRL + O]，確認檔名後 [ENTER]；離開編輯器：[CTRL + X]</p>
+
+  <p>在 Shell 中檢視檔案內容：</p>
+  <pre>
+Bryan4698@htb[/htb]$ cat notes.txt
+
+Here we can type everything we want and make our notes.
+  </pre>
+
+  <p>某些系統檔案對滲透測試者非常重要，例如 <code>/etc/passwd</code>，其中包含使用者名稱、UID、GID、家目錄等資訊。雖然密碼哈希通常存於 <code>/etc/shadow</code>，但如果檔案權限不當，可能會洩露敏感資訊或導致提權。</p>
+
+  <h3>Vim 編輯器</h3>
+  <p>Vim 是 Vi 的增強版，功能強大且可與其他工具（如 grep、awk、sed）整合。它是模態編輯器，可區分文字與指令輸入，提供六種基本模式：</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>模式</th>
+        <th>說明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Normal</td>
+        <td>預設模式，輸入皆為編輯指令，不會直接插入文字。</td>
+      </tr>
+      <tr>
+        <td>Insert</td>
+        <td>文字輸入模式，大部分輸入會加入到檔案內容。</td>
+      </tr>
+      <tr>
+        <td>Visual</td>
+        <td>選取文字區塊，可進行刪除、複製或取代。</td>
+      </tr>
+      <tr>
+        <td>Command</td>
+        <td>可在底部輸入單行指令，例如排序或替換文字。</td>
+      </tr>
+      <tr>
+        <td>Replace</td>
+        <td>輸入文字會覆蓋現有文字。</td>
+      </tr>
+      <tr>
+        <td>Ex</td>
+        <td>模擬舊版 Ex 編輯器，可連續執行多條指令。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>開啟 Vim 後進入命令模式，輸入 <code>:q</code> 退出編輯器。</p>
+  <pre>
+Bryan4698@htb[/htb]$ vim
+:q
+  </pre>
+
+  <h3>VimTutor</h3>
+  <p>Vim 提供教學模式 <code>vimtutor</code>，可快速熟悉編輯器操作。執行命令：</p>
+  <pre>
+Bryan4698@htb[/htb]$ vimtutor
+  </pre>
+
+  <p>VimTutor 約需 25~30 分鐘完成，透過實際操作學習 Vim 指令，練習過程會修改範例文字檔，建議先複製檔案練習。</p>
+
+</section>
+
+
+    <!-- 第十章 -->
+    <section>
+      <h2 class="chapter-title">第十章：尋找檔案與資料夾</h2>
+      <p>有效查找系統內檔案能大幅提升作業效率。常用指令如下：</p>
+      <div class="card my-3">
+        <div class="card-header">which 指令</div>
+        <div class="card-body">
+          <pre><code>which 程式名稱</code></pre>
+          <ul>
+            <li>顯示可執行檔案路徑，判斷工具是否安裝。</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card my-3">
+        <div class="card-header">find 指令進階用法</div>
+        <div class="card-body">
+          <pre><code>find 資料夾 選項</code></pre>
+          <ul>
+            <li>可依檔案型態、檔名、所有者、大小、日期等條件進階查詢。</li>
+            <li>範例：<code>find / -type f -name "*.conf" -user root -size +20k -exec ls -al {} \;</code></li>
+            <li>搭配 <code>2>/dev/null</code> 可忽略無權限錯誤訊息。</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card my-3">
+        <div class="card-header">locate 指令</div>
+        <div class="card-body">
+          <pre><code>sudo updatedb
+locate 關鍵字</code></pre>
+          <ul>
+            <li>快速利用本機資料庫「全域搜尋」檔案名。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+<!-- 第十一章：檔案描述符與重定向 -->
+<section id="ch11" class="chapter-card">
+  <h2 class="chapter-title">第十一章：檔案描述符與重定向</h2>
+
+  <p>在 Unix/Linux 系統中，檔案描述符（File Descriptor, FD）是核心維護的一個引用，用於管理 I/O（輸入/輸出）操作。它可被視為對開啟檔案、套接字或其他 I/O 資源的唯一識別號。在 Windows 系統中，相對應的是「檔案句柄（File Handle）」。</p>
+
+  <p>想像成在衣帽間掛衣服時領到的票號：票號（FD）代表你對衣服（檔案/資源）的連結，每次取衣服（I/O 操作）時交給管理員（作業系統），即可快速找到目標。沒有票號，就無法有效存取對應資源。</p>
+
+  <h3>Linux 預設前三個檔案描述符</h3>
+  <ul>
+    <li><strong>STDIN</em> – 0：標準輸入</li>
+    <li><strong>STDOUT</strong> – 1：標準輸出</li>
+    <li><strong>STDERR</strong> – 2：標準錯誤輸出</li>
+  </ul>
+
+  <h3>STDIN 與 STDOUT 範例</h3>
+  <pre>
+Bryan4698@htb[/htb]$ cat
+SOME INPUT
+# 輸入後按 [ENTER]，輸出即為 STDOUT
+  </pre>
+
+  <h3>STDOUT 與 STDERR 範例</h3>
+  <pre>
+Bryan4698@htb[/htb]$ find /etc/ -name shadow
+# STDOUT 會列出 /etc/shadow
+# STDERR 顯示 Permission denied
+  </pre>
+
+  <h3>將 STDERR 重定向至 /dev/null</h3>
+  <pre>
+Bryan4698@htb[/htb]$ find /etc/ -name shadow 2>/dev/null
+# 標準錯誤訊息將被丟棄
+  </pre>
+
+  <h3>將 STDOUT 重定向到檔案</h3>
+  <pre>
+Bryan4698@htb[/htb]$ find /etc/ -name shadow 2>/dev/null > results.txt
+Bryan4698@htb[/htb]$ cat results.txt
+# 只包含 STDOUT
+  </pre>
+
+  <h3>將 STDOUT 與 STDERR 分開重定向到不同檔案</h3>
+  <pre>
+Bryan4698@htb[/htb]$ find /etc/ -name shadow 2> stderr.txt 1> stdout.txt
+# STDOUT → stdout.txt
+# STDERR → stderr.txt
+  </pre>
+
+  <h3>STDIN 重定向範例</h3>
+  <pre>
+Bryan4698@htb[/htb]$ cat < stdout.txt
+# 透過 STDIN 輸入檔案內容
+  </pre>
+
+  <h3>STDOUT 追加到檔案</h3>
+  <pre>
+Bryan4698@htb[/htb]$ find /etc/ -name passwd >> stdout.txt 2>/dev/null
+# 使用 >> 追加 STDOUT 到已存在檔案
+  </pre>
+
+  <h3>STDIN 流重定向（Here Document）</h3>
+  <pre>
+Bryan4698@htb[/htb]$ cat << EOF > stream.txt
+Hack The Box
+EOF
+Bryan4698@htb[/htb]$ cat stream.txt
+# stream.txt 內容為 "Hack The Box"
+  </pre>
+
+  <h3>使用管線（Pipes）處理 STDOUT</h3>
+  <pre>
+Bryan4698@htb[/htb]$ find /etc/ -name *.conf 2>/dev/null | grep systemd
+# 將 STDOUT 送到 grep 過濾包含 "systemd" 的行
+
+Bryan4698@htb[/htb]$ find /etc/ -name *.conf 2>/dev/null | grep systemd | wc -l
+# 計算符合條件的行數
+  </pre>
+
+  <p>透過理解檔案描述符、重定向及管線，我們可以更精確地控制資料的流向，將輸入、輸出與錯誤訊息分別導向檔案或其他程式，使操作更有效率，也更方便處理大量資料。</p>
+
+</section>
+
+
+<!-- 第十二章：內容過濾 -->
+<section id="ch12" class="chapter-card">
+  <h2 class="chapter-title">第十二章：內容過濾</h2>
+
+  <p>在前一章中，我們學會如何使用重定向將一個程式的輸出傳給另一個程式處理。現在，我們將學習如何直接從命令列閱讀檔案，而不需要打開文字編輯器。</p>
+
+  <p>兩個強大的工具是 <strong>more</strong> 和 <strong>less</strong>，稱為「pagers」，可以讓我們分頁瀏覽檔案內容。它們可以互動式地向前或向後瀏覽檔案，並搜尋文字，而不修改原檔案，特別適合查看大日誌或長檔案。</p>
+
+  <h3>More 範例</h3>
+  <pre>
+Bryan4698@htb[/htb]$ cat /etc/passwd | more
+# 使用 more 分頁顯示
+# 按 [Q] 離開
+  </pre>
+
+  <h3>Less 範例</h3>
+  <pre>
+Bryan4698@htb[/htb]$ less /etc/passwd
+# less 提供更多功能，按 [Q] 離開
+  </pre>
+
+  <h3>Head 範例（顯示檔案前幾行）</h3>
+  <pre>
+Bryan4698@htb[/htb]$ head /etc/passwd
+# 預設顯示前 10 行
+  </pre>
+
+  <h3>Tail 範例（顯示檔案最後幾行）</h3>
+  <pre>
+Bryan4698@htb[/htb]$ tail /etc/passwd
+# 預設顯示最後 10 行
+  </pre>
+
+  <h3>Sort 範例（排序內容）</h3>
+  <pre>
+Bryan4698@htb[/htb]$ cat /etc/passwd | sort
+# 依字母排序
+  </pre>
+
+  <h3>Grep 範例（搜尋模式匹配）</h3>
+  <pre>
+Bryan4698@htb[/htb]$ cat /etc/passwd | grep "/bin/bash"
+# 搜尋使用 /bin/bash 的使用者
+
+Bryan4698@htb[/htb]$ cat /etc/passwd | grep -v "false\|nologin"
+# 排除 /bin/false 或 /usr/sbin/nologin
+  </pre>
+
+  <h3>Cut 範例（擷取特定欄位）</h3>
+  <pre>
+Bryan4698@htb[/htb]$ cat /etc/passwd | grep -v "false\|nologin" | cut -d":" -f1
+# 以冒號為分隔符，輸出第一欄（使用者名稱）
+  </pre>
+
+  <h3>Tr 範例（字元替換）</h3>
+  <pre>
+Bryan4698@htb[/htb]$ cat /etc/passwd | grep -v "false\|nologin" | tr ":" " "
+# 將冒號 ":" 替換為空格
+  </pre>
+
+  <h3>Column 範例（表格化顯示）</h3>
+  <pre>
+Bryan4698@htb[/htb]$ cat /etc/passwd | grep -v "false\|nologin" | tr ":" " " | column -t
+# 使用 -t 將結果排成表格
+  </pre>
+
+  <h3>Awk 範例（進階欄位處理）</h3>
+  <pre>
+Bryan4698@htb[/htb]$ cat /etc/passwd | grep -v "false\|nologin" | tr ":" " " | awk '{print $1, $NF}'
+# 顯示每行的第一欄與最後一欄
+  </pre>
+
+  <h3>Sed 範例（文字替換）</h3>
+  <pre>
+Bryan4698@htb[/htb]$ cat /etc/passwd | grep -v "false\|nologin" | tr ":" " " | awk '{print $1, $NF}' | sed 's/bin/HTB/g'
+# 將 bin 替換成 HTB
+  </pre>
+
+  <h3>Wc 範例（計算行數、字數、字元數）</h3>
+  <pre>
+Bryan4698@htb[/htb]$ cat /etc/passwd | grep -v "false\|nologin" | tr ":" " " | awk '{print $1, $NF}' | wc -l
+# 計算符合條件的行數
+  </pre>
+
+  <h3>練習題</h3>
+  <ol>
+    <li>顯示使用者名稱為 <code>cry0l1t3</code> 的完整行。</li>
+    <li>僅顯示所有使用者名稱。</li>
+    <li>顯示使用者 <code>cry0l1t3</code> 及其 UID。</li>
+    <li>顯示使用者 <code>cry0l1t3</code> 及其 UID，用逗號分隔。</li>
+    <li>顯示使用者 <code>cry0l1t3</code>、UID 與設定的 shell，用逗號分隔。</li>
+    <li>顯示所有使用者名稱、UID 與 shell，用逗號分隔。</li>
+    <li>排除包含 nologin 或 false 的使用者，顯示所有使用者名稱、UID 與 shell，用逗號分隔。</li>
+    <li>排除包含 nologin 的使用者，顯示所有使用者名稱、UID 與 shell，用逗號分隔，並計算行數。</li>
+  </ol>
+
+  <p>建議多實驗 man 頁面（<code>man &lt;工具&gt;</code>）或 <code>&lt;工具&gt; -h</code> 來熟悉各工具功能，並實際練習過濾與操作檔案內容。</p>
+</section>
+
+<!-- 第十三章：正規表達式 -->
+<section id="ch13" class="chapter-card">
+  <h2 class="chapter-title">第十三章：正規表達式 (Regular Expressions)</h2>
+
+  <p>正規表達式（RegEx）就像為文字或檔案設計精準藍圖的藝術。它允許我們以極高的精確度搜尋、替換或操作資料。可以把 RegEx 想成一個高度可客製化的過濾器，用來篩選字串，找出你需要的內容—無論是分析資料、驗證輸入，還是進行進階搜尋。</p>
+
+  <p>正規表達式的核心是一連串的字元與符號，組成搜尋模式。這些模式通常包含特殊符號（metacharacters），它們定義搜尋的結構，而不是字面文字。例如，metacharacters 可以讓你指定搜尋數字、字母或符合特定模式的任意字元。</p>
+
+  <p>RegEx 廣泛應用於許多程式語言與工具中，如 <code>grep</code>、<code>sed</code>，是我們工具箱中非常強大的工具。</p>
+
+  <h3>分組 (Grouping)</h3>
+  <p>RegEx 提供了將搜尋模式分組的功能，主要使用三種括號：</p>
+  <table>
+    <thead>
+      <tr>
+        <th>運算符</th>
+        <th>說明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>(a)</td>
+        <td>小括號用於將 RegEx 部分分組，括號內的模式會一起處理。</td>
+      </tr>
+      <tr>
+        <td>[a-z]</td>
+        <td>中括號用於定義字元類別，列出要搜尋的字元集合。</td>
+      </tr>
+      <tr>
+        <td>{1,10}</td>
+        <td>大括號用於定義量詞，指定前一模式重複次數或範圍。</td>
+      </tr>
+      <tr>
+        <td>|</td>
+        <td>OR 運算符，當任一表達式符合時會顯示結果。</td>
+      </tr>
+      <tr>
+        <td>.*</td>
+        <td>類似 AND 運算符，只有當兩個表達式依指定順序同時匹配時才顯示結果。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>OR 運算符範例</h3>
+  <pre>
+cry0l1t3@htb:~$ grep -E "(my|false)" /etc/passwd
+
+lxd:x:105:65534::/var/lib/lxd/:/bin/false
+pollinate:x:109:1::/var/cache/pollinate:/bin/false
+mysql:x:116:120:MySQL Server,,:/nonexistent:/bin/false
+# 匹配包含 "my" 或 "false" 的行
+  </pre>
+
+  <h3>AND 運算符範例</h3>
+  <pre>
+cry0l1t3@htb:~$ grep -E "(my.*false)" /etc/passwd
+
+mysql:x:116:120:MySQL Server,,:/nonexistent:/bin/false
+# 只有同時包含 "my" 與 "false" 的行才匹配
+  </pre>
+
+  <h3>簡化 AND 範例（管線）</h3>
+  <pre>
+cry0l1t3@htb:~$ grep -E "my" /etc/passwd | grep -E "false"
+
+mysql:x:116:120:MySQL Server,,:/nonexistent:/bin/false
+  </pre>
+
+  <h3>練習題</h3>
+  <p>以下練習將使用 <code>/etc/ssh/sshd_config</code> 檔案，幫助你熟悉 RegEx 的實際應用：</p>
+  <ol>
+    <li>顯示所有不包含 <code>#</code> 的行。</li>
+    <li>搜尋所有包含以 <code>Permit</code> 開頭單字的行。</li>
+    <li>搜尋所有包含以 <code>Authentication</code> 結尾單字的行。</li>
+    <li>搜尋所有包含 <code>Key</code> 的行。</li>
+    <li>搜尋所有以 <code>Password</code> 開頭且包含 <code>yes</code> 的行。</li>
+    <li>搜尋所有以 <code>yes</code> 結尾的行。</li>
+  </ol>
+
+  <p>建議多練習 RegEx，嘗試組合不同的運算符、分組與量詞，並搭配 <code>grep -E</code> 或其他工具，將會提升文字與檔案資料處理能力。</p>
+</section>
+
+
+<!-- 第十四章：權限管理 -->
+<section id="ch14" class="chapter-card">
+  <h2 class="chapter-title">第十四章：權限管理 (Permission Management)</h2>
+
+  <p>在 Linux 中，權限就像控制檔案與目錄存取的鑰匙。這些權限會分配給使用者與群組，每個使用者可以屬於多個群組，群組成員會獲得額外的存取權限。每個檔案與目錄都有一個擁有者（user）與對應的群組，並依此設定可讀、可寫或可執行的權限。</p>
+
+  <p>當使用者要進入目錄時，需要執行權限（x）才能「遍歷」目錄。即便內容可見，沒有 execute 權限也無法進入，會顯示「Permission Denied」。</p>
+
+  <h3>範例：檢視權限</h3>
+  <pre>
+cry0l1t3@htb[/htb]$ ls -l
+drw-rw-r-- 3 cry0l1t3 cry0l1t3 4096 Jan 12 12:30 scripts
+
+cry0l1t3@htb[/htb]$ ls -al mydirectory/
+ls: cannot access 'mydirectory/script.sh': Permission denied
+-????????? ? ? ? ? ? script.sh
+d????????? ? ? ? ? ? subdirectory
+  </pre>
+
+  <p>執行權限允許進入目錄，但不代表可修改或執行其中檔案。修改檔案需要檔案本身的 write 或 execute 權限。</p>
+
+  <h3>檔案權限結構</h3>
+  <pre>
+cry0l1t3@htb[/htb]$ ls -l /etc/passwd
+-rwx rw- r-- 1 root root 1641 May  4 23:42 /etc/passwd
+# 權限對應：
+# rwx | rw- | r--
+# owner | group | others
+# r = 讀, w = 寫, x = 執行
+# - = 無權限, d = 目錄, l = 連結
+  </pre>
+
+  <h3>修改權限 (chmod)</h3>
+  <pre>
+cry0l1t3@htb[/htb]$ ls -l shell
+-rwxr-x--x 1 cry0l1t3 htbteam 0 May  4 22:12 shell
+
+cry0l1t3@htb[/htb]$ chmod a+r shell && ls -l shell
+-rwxr-xr-x 1 cry0l1t3 htbteam 0 May  4 22:12 shell
+
+cry0l1t3@htb[/htb]$ chmod 754 shell && ls -l shell
+-rwxr-xr-- 1 cry0l1t3 htbteam 0 May  4 22:12 shell
+  </pre>
+
+  <h3>權限對應表</h3>
+  <pre>
+Binary Notation:          4 2 1  | 4 2 1 | 4 2 1
+Binary Representation:    1 1 1  | 1 0 1 | 1 0 0
+Octal Value:                  7   |   5   |   4
+Permission Representation: r w x | r - x | r - -
+  </pre>
+
+  <h3>更改擁有者 (chown)</h3>
+  <pre>
+cry0l1t3@htb[/htb]$ chown <user>:<group> <file/directory>
+cry0l1t3@htb[/htb]$ chown root:root shell && ls -l shell
+-rwxr-xr-- 1 root root 0 May  4 22:12 shell
+  </pre>
+
+  <h3>SUID & SGID</h3>
+  <p>特殊權限 SUID/SGID 允許以檔案擁有者或群組的權限執行程式，類似臨時通行證。設定後會在 x 權限的位置顯示 <code>s</code>。</p>
+
+  <p>注意安全風險：若將 SUID 隨意賦予可開啟 shell 的程式，可能導致非授權使用者取得 root 權限。</p>
+
+  <h3>Sticky Bit</h3>
+  <p>Sticky bit 類似共享目錄的鎖，設定在目錄上時，只有檔案擁有者、目錄擁有者或 root 可以刪除或重新命名檔案。其他人可以讀取但無法修改。</p>
+
+  <pre>
+cry0l1t3@htb[/htb]$ ls -l
+drw-rw-r-t 3 cry0l1t3 cry0l1t3 4096 Jan 12 12:30 scripts
+drw-rw-r-T 3 cry0l1t3 cry0l1t3 4096 Jan 12 12:32 reports
+# 小寫 t = sticky bit + execute 權限
+# 大寫 T = sticky bit，但其他使用者無 execute 權限
+  </pre>
+
+  <p>Sticky bit 特別適用於多使用者共享的目錄，防止未授權修改檔案。</p>
+</section>
+
+
+<!-- 第十五章：使用者管理 -->
+<section id="ch15" class="chapter-card">
+  <h2 class="chapter-title">第十五章：使用者管理 (User Management)</h2>
+
+  <p>有效的使用者管理是 Linux 系統管理的重要基礎。管理員常需要建立新帳號或將現有使用者加入特定群組，以維護適當的存取控制。此外，執行命令時切換使用者身份也是常見需求，尤其是不同權限的任務。例如，某些群組可能專屬於檔案或目錄的存取權限，確保系統安全與完整性。</p>
+
+  <p>假設有新員工 Alex 加入公司，並獲得 Linux 工作站。系統管理員需建立 Alex 的使用者帳號，並將其加入有權存取專案檔案或開發工具的群組。若某些任務需要以不同使用者或更高權限執行，也需妥善處理。</p>
+
+  <h3>以一般使用者執行</h3>
+  <pre>
+Bryan4698@htb[/htb]$ cat /etc/shadow
+cat: /etc/shadow: Permission denied
+# /etc/shadow 儲存所有使用者加密密碼資訊，僅 root 可讀寫。
+  </pre>
+
+  <p>若需要提升權限，可使用 <code>sudo</code>，允許特定使用者以另一使用者（通常是 root）執行命令，而不需直接登入 root，這是維持系統安全的最佳做法。</p>
+
+  <h3>以 root 執行</h3>
+  <pre>
+Bryan4698@htb[/htb]$ sudo cat /etc/shadow
+
+root:<SNIP>:18395:0:99999:7:::
+daemon:*:17737:0:99999:7:::
+bin:*:17737:0:99999:7:::
+<SNIP>
+  </pre>
+
+  <h3>常用使用者管理命令</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>命令</th>
+        <th>說明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>sudo</td><td>以其他使用者身份執行命令。</td></tr>
+      <tr><td>su</td><td>切換使用者帳號，預設為 superuser。</td></tr>
+      <tr><td>useradd</td><td>建立新使用者或更新預設新使用者資訊。</td></tr>
+      <tr><td>userdel</td><td>刪除使用者帳號及相關檔案。</td></tr>
+      <tr><td>usermod</td><td>修改使用者帳號設定。</td></tr>
+      <tr><td>addgroup</td><td>新增群組到系統。</td></tr>
+      <tr><td>delgroup</td><td>刪除系統群組。</td></tr>
+      <tr><td>passwd</td><td>變更使用者密碼。</td></tr>
+    </tbody>
+  </table>
+
+  <p>熟悉使用者帳號、權限與認證機制有助於找出漏洞、利用錯誤配置並評估系統安全性。建議在受控環境中練習各指令及選項，並結合前面章節學到的技巧，如建立新使用者、設定目錄與檔案、篩選特定資訊並導向新使用者檔案與目錄。</p>
+
+  <p>在目標系統上，大部分操作皆可重置，因此可放心探索，直到對 Linux 系統操作感到熟悉與自信。</p>
+</section>
+
+
+<!-- 第十六章：套件管理 -->
+<section id="ch16" class="chapter-card">
+  <h2 class="chapter-title">第十六章：套件管理 (Package Management)</h2>
+
+  <p>無論是系統管理員、維護家用 Linux 機器，或管理滲透測試用的發行版，熟悉 Linux 套件管理系統是必須的。套件 (package) 是包含軟體二進位檔、設定檔、依賴資訊及更新紀錄的檔案。套件管理系統通常提供：</p>
+  <ul>
+    <li>套件下載</li>
+    <li>依賴關係解析</li>
+    <li>標準二進位套件格式</li>
+    <li>共通安裝與設定位置</li>
+    <li>系統相關額外功能</li>
+    <li>品質控管</li>
+  </ul>
+
+  <p>套件管理系統依 Linux 發行版不同可使用不同套件格式，例如 <code>.deb</code> 或 <code>.rpm</code>，安裝時會自動處理依賴關係。若套件已刪除，系統會依照設定移除相關檔案。</p>
+
+  <h3>常見套件管理工具</h3>
+  <table>
+    <thead>
+      <tr><th>命令</th><th>說明</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>dpkg</td><td>安裝、建立、刪除與管理 Debian 套件，常用前端是 aptitude。</td></tr>
+      <tr><td>apt</td><td>高階命令列介面，用於套件管理。</td></tr>
+      <tr><td>aptitude</td><td>apt 的替代方案，高階套件管理介面。</td></tr>
+      <tr><td>snap</td><td>安裝、設定、更新與移除 snap 套件，方便分發最新應用程式。</td></tr>
+      <tr><td>gem</td><td>Ruby 套件管理工具。</td></tr>
+      <tr><td>pip</td><td>Python 套件管理工具，適用於非 Debian 存檔的套件。</td></tr>
+      <tr><td>git</td><td>分散式版本控制系統，可下載與管理專案程式碼。</td></tr>
+    </tbody>
+  </table>
+
+  <h3>APT 套件管理</h3>
+  <p>Debian 系發行版使用 APT 管理 <code>.deb</code> 套件，dpkg 直接安裝檔案，APT 可自動解決依賴關係。發行版會維護軟體倉庫 (repository)，常見為 stable、testing 或 unstable。倉庫清單可參考 <code>/etc/apt/sources.list</code> 或 Parrot OS 的 <code>/etc/apt/sources.list.d/parrot.list</code>。</p>
+
+  <pre>
+Bryan4698@htb[/htb]$ cat /etc/apt/sources.list.d/parrot.list
+deb http://htb.deb.parrot.sh/parrot/ rolling main contrib non-free
+deb http://htb.deb.parrot.sh/parrot/ rolling-security main contrib non-free
+  </pre>
+
+  <p>APT 使用快取 (APT cache) 儲存離線套件資訊，可用於搜尋或顯示套件資訊：</p>
+
+  <pre>
+Bryan4698@htb[/htb]$ apt-cache search impacket
+impacket-scripts - Links to useful impacket scripts examples
+python3-impacket - Python3 module to build/dissect network protocols
+  </pre>
+
+  <pre>
+Bryan4698@htb[/htb]$ apt-cache show impacket-scripts
+Package: impacket-scripts
+Version: 1.4
+Architecture: all
+Depends: python3-impacket (>=0.9.20)
+<SNIP>
+  </pre>
+
+  <p>列出已安裝套件：</p>
+
+  <pre>
+Bryan4698@htb[/htb]$ apt list --installed
+accountsservice/rolling,now 0.6.55-2 amd64 [installed,automatic]
+aircrack-ng/rolling,now 1:1.6-4 amd64 [installed,automatic]
+<SNIP>
+  </pre>
+
+  <p>若缺少套件，可使用 apt 安裝：</p>
+
+  <pre>
+Bryan4698@htb[/htb]$ sudo apt install impacket-scripts -y
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+  </pre>
+
+  <h3>Git 與專案下載</h3>
+  <p>安裝 git 後，可從 GitHub 下載專案，例如 'Nishang'：</p>
+
+  <pre>
+Bryan4698@htb[/htb]$ mkdir ~/nishang/ && git clone https://github.com/samratashok/nishang.git ~/nishang
+Cloning into '/opt/nishang/'...
+remote: Enumerating objects: 15, done.
+Receiving objects: 100% (1691/1691), 7.84 MiB | 4.86 MiB/s, done.
+Resolving deltas: 100% (1055/1055), done.
+  </pre>
+
+  <h3>使用 DPKG 安裝單一套件</h3>
+  <p>可直接下載 .deb 檔並用 dpkg 安裝：</p>
+
+  <pre>
+Bryan4698@htb[/htb]$ wget http://archive.ubuntu.com/ubuntu/pool/main/s/strace/strace_4.21-1ubuntu1_amd64.deb
+Bryan4698@htb[/htb]$ sudo dpkg -i strace_4.21-1ubuntu1_amd64.deb
+Preparing to unpack strace_4.21-1ubuntu1_amd64.deb ...
+Unpacking strace (4.21-1ubuntu1) ...
+Setting up strace (4.21-1ubuntu1) ...
+  </pre>
+
+  <p>確認套件是否運作：</p>
+
+  <pre>
+Bryan4698@htb[/htb]$ strace -h
+usage: strace [-CdffhiqrtttTvVwxxy] [-I n] [-e expr]...
+   or: strace -c[dfw] [-I n] [-e expr]... [-O overhead] [-S sortby]
+  </pre>
+</section>
+
+<!-- 第十七章：服務與進程管理 -->
+<section id="ch17" class="chapter-card">
+  <h2 class="chapter-title">第十七章：服務與進程管理 (Service and Process Management)</h2>
+
+  <p>服務（Service，又稱 daemon）是 Linux 系統中在背景運行的核心組件，無需直接使用者互動，但提供重要功能。服務通常可分為：</p>
+  <ul>
+    <li><strong>系統服務</strong>：系統啟動時必須運行的內部服務，如硬體初始化，確保系統正常運作。</li>
+    <li><strong>使用者安裝的服務</strong>：由使用者安裝的服務，通常是伺服器應用程式或其他背景功能，提升系統功能性。</li>
+  </ul>
+
+  <p>常見目標：</p>
+  <ul>
+    <li>啟動 / 重新啟動服務或進程</li>
+    <li>停止服務或進程</li>
+    <li>查看服務或進程狀態</li>
+    <li>設定開機啟用 / 禁用</li>
+    <li>查找服務或進程</li>
+  </ul>
+
+  <h3>Systemd 與 systemctl</h3>
+  <p>現代 Linux 發行版普遍使用 systemd，負責系統初始化。每個進程都有 PID，並可透過 <code>/proc/</code> 查看。父進程的 PID 為 PPID。</p>
+
+  <pre>
+Bryan4698@htb[/htb]$ systemctl start ssh
+Bryan4698@htb[/htb]$ systemctl status ssh
+● ssh.service - OpenBSD Secure Shell server
+   Loaded: loaded (/lib/systemd/system/ssh.service; enabled)
+   Active: active (running)
+   Main PID: 846 (sshd)
+  </pre>
+
+  <p>設定開機自動啟動：</p>
+  <pre>
+Bryan4698@htb[/htb]$ systemctl enable ssh
+</pre>
+
+  <p>使用 <code>ps</code> 查看進程：</p>
+  <pre>
+Bryan4698@htb[/htb]$ ps -aux | grep ssh
+root       846  0.0  0.1  72300  5660 ?        Ss   Mai14   0:00 /usr/sbin/sshd -D
+  </pre>
+
+  <p>列出所有服務：</p>
+  <pre>
+Bryan4698@htb[/htb]$ systemctl list-units --type=service
+accounts-daemon.service loaded active running Accounts Service
+apache2.service         loaded active running Apache HTTP Server
+...
+  </pre>
+
+  <p>若服務無法啟動，可使用 <code>journalctl</code> 查看日誌：</p>
+  <pre>
+Bryan4698@htb[/htb]$ journalctl -u ssh.service --no-pager
+Mai 13 20:38:44 systemd[1]: Starting OpenBSD Secure Shell server...
+Mai 13 20:38:44 sshd[2722]: Server listening on 0.0.0.0 port 22.
+...
+  </pre>
+
+  <h3>Kill 進程</h3>
+  <p>進程狀態：</p>
+  <ul>
+    <li>Running</li>
+    <li>Waiting</li>
+    <li>Stopped</li>
+    <li>Zombie</li>
+  </ul>
+
+  <p>使用 kill、pkill、pgrep 或 killall 控制進程。可查看所有訊號：</p>
+  <pre>
+Bryan4698@htb[/htb]$ kill -l
+ 1) SIGHUP   2) SIGINT  9) SIGKILL  15) SIGTERM  19) SIGSTOP ...
+  </pre>
+
+  <p>常用訊號：</p>
+  <table>
+    <thead><tr><th>訊號</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>SIGHUP (1)</td><td>終端機關閉時送出</td></tr>
+      <tr><td>SIGINT (2)</td><td>[Ctrl]+C 中斷進程</td></tr>
+      <tr><td>SIGKILL (9)</td><td>立即終止進程</td></tr>
+      <tr><td>SIGTERM (15)</td><td>程式結束</td></tr>
+      <tr><td>SIGSTOP (19)</td><td>停止程式，不可被處理</td></tr>
+      <tr><td>SIGTSTP (20)</td><td>[Ctrl]+Z 暫停進程，可後續繼續</td></tr>
+    </tbody>
+  </table>
+
+  <pre>
+Bryan4698@htb[/htb]$ kill 9 &lt;PID&gt;
+  </pre>
+
+  <h3>背景 / 前景進程</h3>
+  <p>使用 [Ctrl]+Z 暫停進程：</p>
+  <pre>
+Bryan4698@htb[/htb]$ ping -c 10 www.hackthebox.eu
+[Ctrl+Z]
+[1]+ Stopped ping -c 10 www.hackthebox.eu
+  </pre>
+
+  <p>將進程放到背景：</p>
+  <pre>
+Bryan4698@htb[/htb]$ bg
+Bryan4698@htb[/htb]$ ping -c 10 www.hackthebox.eu &
+[1] 10825
+  </pre>
+
+  <p>將背景進程拉回前景：</p>
+  <pre>
+Bryan4698@htb[/htb]$ fg 1
+ping -c 10 www.hackthebox.eu
+  </pre>
+
+  <h3>執行多個命令</h3>
+  <ul>
+    <li>分號 (;)：無論前一命令是否成功，依序執行</li>
+    <li>雙 AND (&&)：前一命令成功才執行下一個</li>
+    <li>管道 (|)：依前一命令輸出作為下一命令輸入</li>
+  </ul>
+
+  <pre>
+Bryan4698@htb[/htb]$ echo '1'; echo '2'; echo '3'
+1
+2
+3
+
+Bryan4698@htb[/htb]$ echo '1' && ls MISSING_FILE && echo '3'
+1
+ls: cannot access 'MISSING_FILE': No such file or directory
+  </pre>
+</section>
+
+
+<!-- 第十八章：任務排程 -->
+<section id="ch18" class="chapter-card">
+  <h2 class="chapter-title">第十八章：任務排程 (Task Scheduling)</h2>
+
+  <p>Linux 系統的任務排程允許使用者或系統管理員自動化執行任務，於指定時間或固定間隔執行，省去手動操作。常見應用包括軟體自動更新、腳本執行、資料庫維護及備份。理解任務排程對資安專家和滲透測試員非常重要，可用於合法管理或偵測潛在的惡意活動。</p>
+
+  <h3>Systemd 定時器</h3>
+  <p>Systemd 可用於設定定時器與服務，自動執行腳本或進程：</p>
+  
+  <h4>建立 Timer</h4>
+  <pre>
+Bryan4698@htb[/htb]$ sudo mkdir /etc/systemd/system/mytimer.timer.d
+Bryan4698@htb[/htb]$ sudo vim /etc/systemd/system/mytimer.timer
+  </pre>
+
+  <pre>
+[Unit]
+Description=My Timer
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=1hour
+
+[Install]
+WantedBy=timers.target
+  </pre>
+  <p>使用 <code>OnBootSec</code> 可設定開機後延遲執行一次，使用 <code>OnUnitActiveSec</code> 可設定定期執行。</p>
+
+  <h4>建立 Service</h4>
+  <pre>
+Bryan4698@htb[/htb]$ sudo vim /etc/systemd/system/mytimer.service
+  </pre>
+
+  <pre>
+[Unit]
+Description=My Service
+
+[Service]
+ExecStart=/full/path/to/my/script.sh
+
+[Install]
+WantedBy=multi-user.target
+  </pre>
+
+  <h4>重新載入 Systemd 與啟用定時器</h4>
+  <pre>
+Bryan4698@htb[/htb]$ sudo systemctl daemon-reload
+Bryan4698@htb[/htb]$ sudo systemctl start mytimer.timer
+Bryan4698@htb[/htb]$ sudo systemctl enable mytimer.timer
+  </pre>
+  <p>此時 mytimer.service 將依照定時器設定自動執行。</p>
+
+  <h3>Cron 排程</h3>
+  <p>Cron 也可自動化任務。使用者需編輯 crontab，指定執行時間及腳本：</p>
+
+  <table>
+    <thead>
+      <tr><th>時間欄位</th><th>說明</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Minutes (0-59)</td><td>任務執行的分鐘</td></tr>
+      <tr><td>Hours (0-23)</td><td>任務執行的時</td></tr>
+      <tr><td>Days of month (1-31)</td><td>任務執行的日</td></tr>
+      <tr><td>Months (1-12)</td><td>任務執行的月</td></tr>
+      <tr><td>Days of the week (0-7)</td><td>任務執行的星期</td></tr>
+    </tbody>
+  </table>
+
+  <pre>
+# 系統更新
+0 */6 * * * /path/to/update_software.sh
+
+# 每月第一天執行腳本
+0 0 1 * * /path/to/scripts/run_scripts.sh
+
+# 每週日清理資料庫
+0 0 * * 0 /path/to/scripts/clean_database.sh
+
+# 每週日備份
+0 0 * * 7 /path/to/scripts/backup.sh
+  </pre>
+
+  <p>Cron 可搭配郵件通知或日誌監控任務執行結果。</p>
+
+  <h3>Systemd vs Cron</h3>
+  <p>
+  Systemd 與 Cron 都可排程任務，但設定方式不同：
+  <ul>
+    <li>Systemd：需建立定時器 (.timer) 與服務 (.service) 腳本</li>
+    <li>Cron：需建立 crontab，交由 cron daemon 執行</li>
+  </ul>
+  </p>
+</section>
+
+
+<!-- 第十九章：網路服務 -->
+<section id="ch19" class="chapter-card">
+  <h2 class="chapter-title">第十九章：網路服務 (Network Services)</h2>
+
+  <p>Linux 系統中，網路服務管理是核心技能，涵蓋遠端連線、檔案傳輸、流量分析與服務配置。熟悉網路服務不僅對管理員重要，也對滲透測試與資安評估至關重要。</p>
+
+  <h3>SSH (Secure Shell)</h3>
+  <p>SSH 提供安全的遠端登入與檔案傳輸。OpenSSH 是最常用的 SSH 伺服器。</p>
+
+  <pre>
+# 安裝 OpenSSH Server
+Bryan4698@htb[/htb]$ sudo apt install openssh-server -y
+
+# 查看伺服器狀態
+Bryan4698@htb[/htb]$ systemctl status ssh
+
+# 遠端登入
+Bryan4698@htb[/htb]$ ssh user@10.129.17.122
+  </pre>
+
+  <p>SSH 配置可透過 <code>/etc/ssh/sshd_config</code> 編輯，如限制連線數、使用密碼或金鑰登入、主機金鑰檢查等。</p>
+
+  <h3>NFS (Network File System)</h3>
+  <p>NFS 允許將遠端檔案系統掛載到本地，方便跨網路管理檔案。</p>
+
+  <pre>
+# 安裝 NFS
+Bryan4698@htb[/htb]$ sudo apt install nfs-kernel-server -y
+
+# 查看伺服器狀態
+Bryan4698@htb[/htb]$ systemctl status nfs-kernel-server
+
+# 建立共享資料夾
+cry0l1t3@htb:~$ mkdir nfs_sharing
+cry0l1t3@htb:~$ echo '/home/cry0l1t3/nfs_sharing hostname(rw,sync,no_root_squash)' >> /etc/exports
+
+# 掛載 NFS 共享
+cry0l1t3@htb:~$ mkdir ~/target_nfs
+cry0l1t3@htb:~$ mount 10.129.12.17:/home/john/dev_scripts ~/target_nfs
+  </pre>
+
+  <p>NFS 權限可配置：</p>
+  <table>
+    <thead>
+      <tr><th>權限</th><th>說明</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>rw</td><td>讀寫</td></tr>
+      <tr><td>ro</td><td>唯讀</td></tr>
+      <tr><td>no_root_squash</td><td>不限制 root 權限</td></tr>
+      <tr><td>root_squash</td><td>限制 root 權限為一般使用者</td></tr>
+      <tr><td>sync</td><td>同步傳輸</td></tr>
+      <tr><td>async</td><td>非同步傳輸，提高速度</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Web Server</h3>
+  <p>Web 伺服器用於提供 HTTP/HTTPS 服務，常見於 Apache、Nginx、Lighttpd、Caddy。</p>
+
+  <pre>
+# 安裝 Apache
+Bryan4698@htb[/htb]$ sudo apt install apache2 -y
+
+# Apache 設定範例
+<Directory /var/www/html>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+</Directory>
+
+# Python 簡易 Web Server
+Bryan4698@htb[/htb]$ sudo apt install python3 -y
+Bryan4698@htb[/htb]$ python3 -m http.server --directory /home/cry0l1t3/target_files 8000
+  </pre>
+
+  <h3>VPN (Virtual Private Network)</h3>
+  <p>VPN 提供安全加密通道，讓使用者像在內部網路一樣存取遠端資源。OpenVPN 是常用的 Linux VPN 解決方案。</p>
+
+  <pre>
+# 安裝 OpenVPN
+Bryan4698@htb[/htb]$ sudo apt install openvpn -y
+
+# 連線到 VPN
+Bryan4698@htb[/htb]$ sudo openvpn --config internal.ovpn
+  </pre>
+</section>
+
+
+<!-- 第二十章：網頁服務操作 -->
+<section id="ch20" class="chapter-card">
+  <h2 class="chapter-title">第二十章：網頁服務操作 (Working with Web Services)</h2>
+
+  <p>瀏覽器與網頁伺服器的互動是網站開發的核心。Linux 系統上常用的網頁伺服器有 Apache、Nginx、IIS 等，其中 Apache 以模組化與擴展性著稱。</p>
+
+  <h3>Apache Web Server</h3>
+  <p>Apache 可透過各種模組來執行特定任務：</p>
+  <ul>
+    <li><code>mod_ssl</code>：加密資料傳輸</li>
+    <li><code>mod_proxy</code>：代理伺服器與流量控制</li>
+    <li><code>mod_headers</code> & <code>mod_rewrite</code>：動態修改 HTTP 標頭與 URL</li>
+  </ul>
+  <p>支援靜態與動態網頁，並可結合 PHP、Perl、Ruby、Python、JavaScript、Lua 等語言。</p>
+
+  <pre>
+# 安裝 Apache
+Bryan4698@htb[/htb]$ sudo apt install apache2 -y
+
+# 啟動 Apache
+Bryan4698@htb[/htb]$ sudo systemctl start apache2
+
+# 若 port 80 被佔用，可修改 /etc/apache2/ports.conf
+Listen 8080
+
+# 重新啟動 Apache
+Bryan4698@htb[/htb]$ sudo systemctl restart apache2
+
+# 驗證 Apache
+Bryan4698@htb[/htb]$ curl -I http://localhost:8080
+  </pre>
+
+  <h3>使用命令列工具與 Web Server 互動</h3>
+  <p>命令列工具可方便分析網頁內容，常用工具包括 <code>curl</code> 與 <code>wget</code>：</p>
+
+  <pre>
+# 使用 curl 讀取網頁
+Bryan4698@htb[/htb]$ curl http://localhost
+
+# 使用 wget 下載網頁
+Bryan4698@htb[/htb]$ wget http://localhost
+  </pre>
+
+  <h3>Python 3 簡易 Web Server</h3>
+  <p>Python 3 可快速啟動單一資料夾的 Web Server：</p>
+
+  <pre>
+# 啟動 Python Web Server
+Bryan4698@htb[/htb]$ python3 -m http.server
+
+# 指定資料夾啟動
+Bryan4698@htb[/htb]$ python3 -m http.server --directory /home/cry0l1t3/target_files
+
+# 監控請求
+127.0.0.1 - - [15/May/2020 17:56:29] "GET /readme.html HTTP/1.1" 200 -
+127.0.0.1 - - [15/May/2020 17:56:29] "GET /wp-admin/css/install.css?ver=20100228 HTTP/1.1" 200 -
+  </pre>
+
+  <p>透過這些方法，我們可以快速建立測試環境、下載檔案或分析網頁內容。學習過程中會遇到新的挑戰，需透過研究與創意思考解決問題，這有助於在滲透測試與實務操作中增強技能與適應能力。</p>
+</section>
+
+<!-- 第二十一章：備份與還原 -->
+<section id="ch21" class="chapter-card">
+  <h2 class="chapter-title">第二十一章：備份與還原 (Backup and Restore)</h2>
+
+  <p>Linux 系統提供多種強大的備份與還原工具，如 <code>Rsync</code>、<code>Duplicity</code>、<code>Deja Dup</code>，用於保護資料不受遺失或破壞，並確保資料可隨時取回。</p>
+
+  <h3>Rsync</h3>
+  <p>Rsync 是一個開源工具，可快速備份資料，僅傳輸變更部分，特別適合網路傳輸和增量備份。</p>
+
+  <pre>
+# 安裝 Rsync
+Bryan4698@htb[/htb]$ sudo apt install rsync -y
+
+# 備份本地資料夾到遠端備份伺服器
+Bryan4698@htb[/htb]$ rsync -av /path/to/mydirectory user@backup_server:/path/to/backup/directory
+
+# 使用壓縮、增量備份並刪除遠端不存在的檔案
+Bryan4698@htb[/htb]$ rsync -avz --backup --backup-dir=/path/to/backup/folder --delete /path/to/mydirectory user@backup_server:/path/to/backup/directory
+
+# 從遠端伺服器還原資料
+Bryan4698@htb[/htb]$ rsync -av user@remote_host:/path/to/backup/directory /path/to/mydirectory
+  </pre>
+
+  <h3>加密傳輸</h3>
+  <p>使用 SSH 保護 Rsync 傳輸資料安全：</p>
+
+  <pre>
+# 使用 SSH 傳輸加密
+Bryan4698@htb[/htb]$ rsync -avz -e ssh /path/to/mydirectory user@backup_server:/path/to/backup/directory
+  </pre>
+
+  <h3>自動同步 (Auto-Synchronization)</h3>
+  <p>可結合 <code>cron</code> 與 Rsync 自動同步資料：</p>
+
+  <pre>
+# 產生 SSH 金鑰
+Bryan4698@htb[/htb]$ ssh-keygen -t rsa -b 2048
+
+# 將公鑰複製到遠端伺服器
+Bryan4698@htb[/htb]$ ssh-copy-id user@backup_server
+
+# 建立 Rsync 自動備份腳本
+RSYNC_Backup.sh
+#!/bin/bash
+rsync -avz -e ssh /path/to/mydirectory user@backup_server:/path/to/backup/directory
+
+# 設定腳本執行權限
+Bryan4698@htb[/htb]$ chmod +x RSYNC_Backup.sh
+
+# 設定每小時自動執行 Cron Job
+Bryan4698@htb[/htb]$ crontab -e
+
+# Crontab 範例內容
+0 * * * * /path/to/RSYNC_Backup.sh
+  </pre>
+
+  <p>建議在 Pwnbox 測試 Rsync 自動同步功能，可創建兩個目錄 <code>to_backup</code> 與 <code>synced_backup</code>，並使用 loopback IP <code>127.0.0.1</code> 進行本地同步與 cron 自動化測試。</p>
+
+  <h3>Duplicity & Deja Dup</h3>
+  <p>Duplicity 在 Rsync 的基礎上加入加密功能，可將備份存放於遠端或雲端安全地加密；Deja Dup 提供簡單易用的圖形化介面，也支援加密備份，方便使用者快速備份與還原資料。</p>
+</section>
+
+
+<!-- 第二十二章：檔案系統管理 -->
+<section id="ch22" class="chapter-card">
+  <h2 class="chapter-title">第二十二章：檔案系統管理 (File System Management)</h2>
+
+  <p>管理 Linux 檔案系統是一項重要工作，涉及組織、存儲與維護資料。Linux 支援多種檔案系統，如 <code>ext2</code>、<code>ext3</code>、<code>ext4</code>、<code>XFS</code>、<code>Btrfs</code>、<code>NTFS</code> 等，每種系統具有不同特性，適合不同用途。</p>
+
+  <h3>常見檔案系統介紹</h3>
+  <ul>
+    <li><strong>ext2</strong>：較舊，無 journaling，適合低負載設備（如 USB）。</li>
+    <li><strong>ext3 / ext4</strong>：支援 journaling，ext4 為現代 Linux 預設，平衡性能與可靠性。</li>
+    <li><strong>Btrfs</strong>：支援 snapshot、資料完整性檢查，適合複雜存儲架構。</li>
+    <li><strong>XFS</strong>：適合大檔案與高 I/O 環境。</li>
+    <li><strong>NTFS</strong>：Windows 相容，適用於雙系統或外接磁碟。</li>
+  </ul>
+
+  <h3>Inode 與檔案類型</h3>
+  <p>Linux 使用 inode 結構儲存檔案元資料（權限、擁有者、大小、時間戳等），inode 表則管理所有檔案與目錄。類比圖書館，inode 如索引卡，inode 表如整個目錄系統。</p>
+
+  <p>檔案類型：</p>
+  <ul>
+    <li>Regular files：常見文字或二進位檔案</li>
+    <li>Directories：檔案容器，組織檔案</li>
+    <li>Symbolic links：快捷方式，指向其他檔案或目錄</li>
+  </ul>
+
+  <pre>
+# 顯示 inode 與檔案資訊
+Bryan4698@htb[/htb]$ ls -il
+total 0
+10678872 -rw-r--r--  1 cry0l1t3  htb  234123 Feb 14 19:30 myscript.py
+10678869 -rw-r--r--  1 cry0l1t3  htb   43230 Feb 14 11:52 notes.txt
+  </pre>
+
+  <h3>磁碟與分割</h3>
+  <p>Linux 磁碟管理可使用 <code>fdisk</code>、<code>gpart</code>、<code>GParted</code> 創建與管理分割區：</p>
+
+  <pre>
+# 列出磁碟與分割區
+Bryan4698@htb[/htb]$ sudo fdisk -l
+
+Disk /dev/vda: 160 GiB, ...
+Device     Boot     Start       End   Sectors  Size Id Type
+/dev/vda1  *         2048 158974027 158971980 75.8G 83 Linux
+/dev/vda2       158974028 167766794   8792767  4.2G 82 Linux swap / Solaris
+  </pre>
+
+  <h3>掛載與卸載</h3>
+  <p>使用 <code>mount</code> 將磁碟或分割區掛載到檔案系統目錄；使用 <code>umount</code> 卸載。自動掛載可設定於 <code>/etc/fstab</code>。</p>
+
+  <pre>
+# 顯示 fstab
+Bryan4698@htb[/htb]$ cat /etc/fstab
+UUID=... / btrfs defaults 0 1
+UUID=... /home btrfs defaults 0 2
+UUID=... swap swap defaults 0 0
+
+# 掛載 USB
+Bryan4698@htb[/htb]$ sudo mount /dev/sdb1 /mnt/usb
+Bryan4698@htb[/htb]$ cd /mnt/usb && ls -l
+
+# 卸載 USB
+Bryan4698@htb[/htb]$ sudo umount /mnt/usb
+
+# 檢查使用中檔案
+cry0l1t3@htb:~$ lsof | grep cry0l1t3
+  </pre>
+
+  <h3>SWAP 空間</h3>
+  <p>Swap 是記憶體管理的一部分，用於當 RAM 滿載時存放不活躍頁面。可用 <code>mkswap</code> 建立，<code>swapon</code> 啟用。</p>
+
+  <p>Swap 空間大小依系統 RAM 與使用需求決定，可用於擴展記憶體或支援休眠功能。建議將 Swap 設在獨立分割區或檔案，並加密保護敏感資料。</p>
+</section>
+
+
+<!-- 第二十三章：Containerization -->
+<section id="ch23" class="chapter-card">
+  <h2 class="chapter-title">第二十三章：容器化 (Containerization)</h2>
+
+  <p>容器化是將應用程式打包並在隔離環境中運行的過程，這些容器提供輕量且一致的環境，確保應用程式在任何系統上都能以相同行為運行。常見技術包括 <code>Docker</code>、<code>Docker Compose</code> 和 <code>LXC</code>。</p>
+
+  <h3>容器 vs 虛擬機</h3>
+  <ul>
+    <li>共享主機核心，較輕量、效率高</li>
+    <li>便於快速部署、管理和擴展</li>
+    <li>隔離應用程式，提供安全屏障</li>
+  </ul>
+
+  <h3>Docker</h3>
+  <p>Docker 是一個開源平台，用於將應用打包成容器。它使用分層檔案系統與資源隔離，提供靈活與可攜性。容器可以透過 <code>Dockerfile</code> 建立。</p>
+
+  <pre>
+# 安裝 Docker Engine (Ubuntu)
+#!/bin/bash
+sudo apt update -y
+sudo apt install ca-certificates curl gnupg lsb-release -y
+sudo mkdir -m 0755 -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt update -y
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+sudo usermod -aG docker htb-student
+docker run hello-world
+  </pre>
+
+  <h3>建立 Docker Image</h3>
+  <pre>
+# Dockerfile 範例
+FROM ubuntu:22.04
+RUN apt-get update && apt-get install -y apache2 openssh-server && rm -rf /var/lib/apt/lists/*
+RUN useradd -m docker-user && echo "docker-user:password" | chpasswd
+RUN chown -R docker-user:docker-user /var/www/html /var/run/apache2 /var/log/apache2 /var/lock/apache2
+RUN usermod -aG sudo docker-user && echo "docker-user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+EXPOSE 22 80
+CMD service ssh start && /usr/sbin/apache2ctl -D FOREGROUND
+
+# 建立並運行容器
+docker build -t FS_docker .
+docker run -p 8022:22 -p 8080:80 -d FS_docker
+  </pre>
+
+  <h3>Docker 管理常用命令</h3>
+  <ul>
+    <li><code>docker ps</code>：列出運行中容器</li>
+    <li><code>docker stop/start/restart</code>：停止/啟動/重啟容器</li>
+    <li><code>docker rm</code>：刪除容器</li>
+    <li><code>docker rmi</code>：刪除映像檔</li>
+    <li><code>docker logs</code>：查看容器日誌</li>
+  </ul>
+
+  <h3>LXC (Linux Containers)</h3>
+  <p>LXC 是輕量級虛擬化技術，允許在單一主機上運行多個隔離的 Linux 系統。使用 cgroups 與 namespaces 來隔離資源。</p>
+
+  <pre>
+# 安裝 LXC
+sudo apt install lxc -y
+
+# 建立 Ubuntu 容器
+sudo lxc-create -n linuxcontainer -t ubuntu
+
+# 管理 LXC 容器
+lxc-ls                     # 列出容器
+lxc-start -n <container>   # 啟動容器
+lxc-stop -n <container>    # 停止容器
+lxc-restart -n <container> # 重啟容器
+lxc-attach -n <container>  # 進入容器
+lxc-config -n <container> -s storage|network|security  # 設定容器資源
+  </pre>
+
+  <h3>容器資源限制範例</h3>
+  <pre>
+# 編輯配置文件限制 CPU 與記憶體
+sudo vim /usr/share/lxc/config/linuxcontainer.conf
+
+lxc.cgroup.cpu.shares = 512
+lxc.cgroup.memory.limit_in_bytes = 512M
+
+# 套用設定
+sudo systemctl restart lxc.service
+  </pre>
+
+  <h3>安全性與隔離</h3>
+  <p>LXC 利用 namespaces 提供進程、網路、檔案系統隔離。重要措施包括：</p>
+  <ul>
+    <li>限制容器資源</li>
+    <li>隔離容器與主機</li>
+    <li>強制存取控制 (AppArmor/SELinux)</li>
+    <li>僅允許授權存取</li>
+    <li>保持容器更新</li>
+  </ul>
+
+  <h3>練習建議</h3>
+  <ol>
+    <li>安裝 LXC 並建立第一個容器</li>
+    <li>配置容器網路</li>
+    <li>建立自訂 LXC 映像並啟動新容器</li>
+    <li>配置資源限制 (CPU、記憶體、磁碟)</li>
+    <li>探索 lxc-* 指令管理容器</li>
+    <li>建立特定版本 Web 伺服器容器 (Apache/Nginx)</li>
+    <li>設定 SSH 存取容器</li>
+    <li>建立持久化容器</li>
+    <li>用 LXC 測試軟體或受控環境漏洞</li>
+  </ol>
+</section>
+
+
+<!-- 第24章 -->
+<section id="ch24" class="chapter-card">
+  <h2 class="chapter-title">第二十四章：Network Configuration</h2>
+  <p>作為滲透測試人員，熟悉 Linux 的網路配置與管理是必備技能。掌握網路設定可以高效建立測試環境、操作網路流量，以及發現或利用漏洞。</p>
+
+  <h3>Network Configuration</h3>
+  <p>主要任務包括管理網路介面、分配 IP、配置路由器/交換器，以及設定各種網路協定（TCP/IP, DNS, DHCP, FTP 等）。熟悉有線與無線介面，並能排解連線問題，是網路配置的核心能力。</p>
+
+  <h4>查看網路介面</h4>
+  <pre>
+cry0l1t3@htb:~$ ifconfig
+...SNIP...
+cry0l1t3@htb:~$ ip addr
+...SNIP...
+  </pre>
+
+  <h4>啟用網路介面</h4>
+  <pre>
+sudo ifconfig eth0 up
+# OR
+sudo ip link set eth0 up
+  </pre>
+
+  <h4>設定 IP 與網路遮罩</h4>
+  <pre>
+sudo ifconfig eth0 192.168.1.2
+sudo ifconfig eth0 netmask 255.255.255.0
+  </pre>
+
+  <h4>設定預設閘道</h4>
+  <pre>
+sudo route add default gw 192.168.1.1 eth0
+  </pre>
+
+  <h4>設定 DNS</h4>
+  <pre>
+sudo vim /etc/resolv.conf
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+  </pre>
+
+  <h4>永久保存設定</h4>
+  <pre>
+sudo vim /etc/network/interfaces
+# 範例
+auto eth0
+iface eth0 inet static
+  address 192.168.1.2
+  netmask 255.255.255.0
+  gateway 192.168.1.1
+  dns-nameservers 8.8.8.8 8.8.4.4
+
+sudo systemctl restart networking
+  </pre>
+
+  <h3>Network Access Control (NAC)</h3>
+  <p>控制網路訪問以保護系統安全，主要模型包括 DAC, MAC, RBAC。</p>
+  <table>
+    <thead>
+      <tr><th>Type</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>DAC</td><td>資源擁有者設定存取權限</td></tr>
+      <tr><td>MAC</td><td>作業系統強制權限，較安全但不靈活</td></tr>
+      <tr><td>RBAC</td><td>基於角色分配權限，便於管理</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Monitoring</h3>
+  <p>監控網路流量與分析潛在威脅。</p>
+  <pre>
+# 工具
+syslog, rsyslog, ss, lsof, ELK stack
+Wireshark, tshark, Tcpdump
+  </pre>
+
+  <h3>Troubleshooting</h3>
+  <pre>
+ping <remote_host>
+traceroute <host>
+netstat -a
+nmap
+tcpdump
+  </pre>
+
+  <h3>Hardening</h3>
+  <p>保護系統安全的工具：</p>
+  <ul>
+    <li>SELinux：強制存取控制，細粒度權限</li>
+    <li>AppArmor：基於 profile 的存取控制，較易配置</li>
+    <li>TCP Wrappers：基於 IP 的簡單網路服務訪問控制</li>
+  </ul>
+
+  <h3>Setting Up (練習項目)</h3>
+  <ol>
+    <li>安裝並配置 SELinux 以限制用戶對檔案或服務的存取</li>
+    <li>使用 AppArmor 設定應用程式權限</li>
+    <li>使用 TCP Wrappers 控制 IP 訪問網路服務</li>
+  </ol>
+</section>
+
+<section id="ch25" class="chapter-card">
+  <h2 class="chapter-title">第二十五章：Remote Desktop Protocols in Linux</h2>
+
+  <p>Remote desktop protocols 在 Windows、Linux、macOS 中提供圖形化遠端存取系統，方便管理、維護與故障排除。常用的協議包括：</p>
+  <ul>
+    <li><strong>RDP (Remote Desktop Protocol)</strong>：主要用於 Windows，允許遠端桌面操作。</li>
+    <li><strong>VNC (Virtual Network Computing)</strong>：跨平台協議，在 Linux 中常用，提供遠端桌面操作。</li>
+  </ul>
+  <p>RDP 就像是 Windows 專用的鑰匙，VNC 則是通用鑰匙，但多用於 Linux 系統。</p>
+
+  <h3>XServer</h3>
+  <p>XServer 是 X Window System (X11) 的使用端部分，負責圖形介面與系統溝通。X11 支援 TCP/IP 傳輸，通常使用 TCP 6000-6009 端口，提供網路透明性。</p>
+  <p>若本地與遠端都是 Unix/Linux 系統，可直接使用 X11 避免 VNC/RDP。缺點是未加密，可透過 SSH 隧道加密。</p>
+
+  <pre><code># 啟用 X11 Forwarding
+cat /etc/ssh/sshd_config | grep X11Forwarding
+X11Forwarding yes
+
+# 透過 SSH 執行遠端應用
+ssh -X user@remote /usr/bin/firefox
+</code></pre>
+
+  <h3>X11 安全性</h3>
+  <p>X11 預設未加密，TCP 6000-6010 端口容易被同網段攻擊者截取視窗資料，例如使用 xwd 或 xgrabsc 截圖，建議透過 SSH 隧道保護。</p>
+
+  <h3>XDMCP</h3>
+  <p>X Display Manager Control Protocol (XDMCP) 使用 UDP 177 端口，管理遠端 X Window session。可將整個 GUI 重定向，但不安全，容易遭 MITM 攻擊。</p>
+
+  <h3>VNC</h3>
+  <p>VNC 基於 RFB 協議，提供遠端桌面控制，支持跨平台，需身份驗證與加密。常用 TCP 端口 5900 + 顯示號（:0=5900, :1=5901 ...）。</p>
+
+  <h4>TigerVNC 安裝與設定</h4>
+  <pre><code># 安裝 XFCE 與 VNC Server
+sudo apt install xfce4 xfce4-goodies tigervnc-standalone-server -y
+
+# 設定 VNC 密碼
+vncpasswd
+
+# 建立必要設定檔
+touch ~/.vnc/xstartup ~/.vnc/config
+
+# xstartup 設定
+cat &lt;&lt;EOT &gt;&gt; ~/.vnc/xstartup
+#!/bin/bash
+unset SESSION_MANAGER
+unset DBUS_SESSION_BUS_ADDRESS
+/usr/bin/startxfce4
+[ -x /etc/vnc/xstartup ] &amp;&amp; exec /etc/vnc/xstartup
+[ -r $HOME/.Xresources ] &amp;&amp; xrdb $HOME/.Xresources
+x-window-manager &
+EOT
+
+# config 設定
+cat &lt;&lt;EOT &gt;&gt; ~/.vnc/config
+geometry=1920x1080
+dpi=96
+EOT
+
+# 設定執行權限
+chmod +x ~/.vnc/xstartup
+
+# 啟動 VNC server
+vncserver
+
+# 列出 VNC sessions
+vncserver -list
+</code></pre>
+
+  <h4>SSH 隧道加密連線</h4>
+  <pre><code># 建立 SSH 隧道
+ssh -L 5901:127.0.0.1:5901 -N -f -l user remote_host
+
+# 透過 VNC client 連線
+xtightvncviewer localhost:5901
+</code></pre>
+
+  <p>透過 SSH 隧道可以加密 VNC 連線，確保遠端桌面安全。</p>
+</section>
+
+
+<section id="ch26" class="chapter-card">
+  <h2 class="chapter-title">第二十六章：Linux Security</h2>
+
+  <p>所有電腦系統都有被入侵的風險。Linux 系統相對 Windows 系統病毒少、攻擊面小，但仍需落實安全措施。</p>
+
+  <h3>基本安全措施</h3>
+  <ul>
+    <li>保持作業系統與已安裝套件更新：
+      <pre><code>apt update && apt dist-upgrade</code></pre>
+    </li>
+    <li>設定防火牆與 iptables 限制進出流量</li>
+    <li>SSH 安全設定：
+      <ul>
+        <li>禁止 root 登入</li>
+        <li>避免使用密碼登入，建議使用金鑰驗證</li>
+      </ul>
+    </li>
+    <li>使用最小權限原則管理用戶與 sudo 權限</li>
+    <li>Fail2ban：限制連續登入失敗的 IP</li>
+    <li>定期審計系統，檢查：
+      <ul>
+        <li>過期內核</li>
+        <li>用戶權限問題</li>
+        <li>世界可寫檔案</li>
+        <li>cron 任務或服務錯誤配置</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h3>進階安全措施</h3>
+  <ul>
+    <li>SELinux / AppArmor：透過標籤與策略控制訪問權限</li>
+    <li>常用安全工具：
+      <ul>
+        <li>Snort</li>
+        <li>chkrootkit</li>
+        <li>rkhunter</li>
+        <li>Lynis</li>
+      </ul>
+    </li>
+    <li>其他安全設定：
+      <ul>
+        <li>移除或停用不必要的服務與軟體</li>
+        <li>移除未加密認證的服務</li>
+        <li>確保 NTP 啟用，Syslog 運行</li>
+        <li>每位用戶擁有自己的帳號</li>
+        <li>強制使用強密碼</li>
+        <li>密碼老化與防止舊密碼重複使用</li>
+        <li>登入失敗鎖定帳號</li>
+        <li>停用不必要的 SUID/SGID 程式</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h3>TCP Wrappers</h3>
+  <p>TCP Wrappers 允許管理員根據 IP 或主機名控制服務存取，設定檔如下：</p>
+  <pre><code>/etc/hosts.allow
+# 允許 SSH 從內網存取
+sshd : 10.129.14.0/24
+
+# 允許 FTP 從特定主機存取
+ftpd : 10.129.14.10
+
+# 允許 Telnet 從 inlanefreight.local 網域存取
+telnetd : .inlanefreight.local
+</code></pre>
+
+  <pre><code>/etc/hosts.deny
+# 拒絕來自 inlanefreight.com 網域的所有服務
+ALL : .inlanefreight.com
+
+# 拒絕 SSH 從特定主機
+sshd : 10.129.22.22
+
+# 拒絕 FTP 從 10.129.22.0/24 網段
+ftpd : 10.129.22.0/24
+</code></pre>
+
+  <p>注意：規則順序重要，第一個匹配的規則將被套用。TCP Wrappers 不替代防火牆，只控制服務存取而非端口。</p>
+</section>
+
+
+<section id="ch27" class="chapter-card">
+  <h2 class="chapter-title">第二十七章：Firewall Setup</h2>
+
+  <p>防火牆主要用於控制與監控不同網路區段之間的流量，如內部網路與外部網路。它可以依規則、協議、端口等過濾進出流量，以防止未授權存取和安全威脅。</p>
+
+  <h3>Linux 防火牆概述</h3>
+  <p>iptables 是 Linux 早期防火牆工具，取代了 ipchains 與 ipfwadm。它透過 Netfilter 核心框架操作封包，提供靈活的防火牆規則設定。</p>
+
+  <h3>iptables 主要組件</h3>
+  <table>
+    <thead>
+      <tr><th>組件</th><th>描述</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Tables</td><td>分類與組織防火牆規則</td></tr>
+      <tr><td>Chains</td><td>規則鏈，用於處理特定類型的網路流量</td></tr>
+      <tr><td>Rules</td><td>定義篩選封包的條件與動作</td></tr>
+      <tr><td>Matches</td><td>匹配特定封包特徵，如 IP、端口、協議</td></tr>
+      <tr><td>Targets</td><td>指定符合規則的封包處理方式，如 ACCEPT、DROP 等</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Tables</h3>
+  <table>
+    <thead>
+      <tr><th>表格名稱</th><th>描述</th><th>內建 Chains</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>filter</td><td>依 IP、端口與協議篩選流量</td><td>INPUT, OUTPUT, FORWARD</td></tr>
+      <tr><td>nat</td><td>修改封包來源或目的 IP</td><td>PREROUTING, POSTROUTING</td></tr>
+      <tr><td>mangle</td><td>修改封包標頭欄位</td><td>PREROUTING, OUTPUT, INPUT, FORWARD, POSTROUTING</td></tr>
+    </tbody>
+  </table>
+  <p>額外的 raw 表格提供特殊封包處理選項，內建 PREROUTING 與 OUTPUT chains。</p>
+
+  <h3>Chains</h3>
+  <p>Chains 將規則組織起來，用於處理網路流量。分為內建與使用者定義：</p>
+  <ul>
+    <li>filter 表格：INPUT, OUTPUT, FORWARD</li>
+    <li>nat 表格：PREROUTING, POSTROUTING</li>
+    <li>mangle 表格：PREROUTING, OUTPUT, INPUT, FORWARD, POSTROUTING</li>
+    <li>使用者定義鏈：可依來源 IP、目的端口或協議分組規則</li>
+  </ul>
+
+  <h3>Rules & Targets</h3>
+  <p>iptables 規則由 matches 與 target 組成，例如允許 SSH 流量：</p>
+  <pre><code>sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT</code></pre>
+
+  <h4>常見 Targets</h4>
+  <table>
+    <thead>
+      <tr><th>Target</th><th>描述</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>ACCEPT</td><td>允許封包通過</td></tr>
+      <tr><td>DROP</td><td>丟棄封包</td></tr>
+      <tr><td>REJECT</td><td>丟棄並回覆錯誤訊息</td></tr>
+      <tr><td>LOG</td><td>將封包資訊記錄到系統日誌</td></tr>
+      <tr><td>SNAT</td><td>修改來源 IP (NAT)</td></tr>
+      <tr><td>DNAT</td><td>修改目的 IP (NAT)</td></tr>
+      <tr><td>MASQUERADE</td><td>動態 IP 來源轉換</td></tr>
+      <tr><td>REDIRECT</td><td>重導封包到其他端口/IP</td></tr>
+      <tr><td>MARK</td><td>修改 Netfilter 標記值，用於進階路由</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Matches</h3>
+  <p>Matches 用於指定封包符合規則的條件，常用參數：</p>
+  <table>
+    <thead>
+      <tr><th>參數</th><th>描述</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>-p / --protocol</td><td>指定協議 (tcp, udp, icmp)</td></tr>
+      <tr><td>--dport</td><td>指定目的端口</td></tr>
+      <tr><td>--sport</td><td>指定來源端口</td></tr>
+      <tr><td>-s / --source</td><td>來源 IP</td></tr>
+      <tr><td>-d / --destination</td><td>目的 IP</td></tr>
+      <tr><td>-m state</td><td>依連線狀態匹配 (NEW, ESTABLISHED, RELATED)</td></tr>
+      <tr><td>-m multiport</td><td>匹配多個端口或範圍</td></tr>
+      <tr><td>-m tcp</td><td>TCP 封包匹配選項</td></tr>
+      <tr><td>-m udp</td><td>UDP 封包匹配選項</td></tr>
+      <tr><td>-m string</td><td>匹配含特定字串的封包</td></tr>
+      <tr><td>-m limit</td><td>依頻率限制封包</td></tr>
+      <tr><td>-m conntrack</td><td>依連線追蹤資訊匹配</td></tr>
+      <tr><td>-m mark</td><td>依 Netfilter 標記匹配</td></tr>
+      <tr><td>-m mac</td><td>依 MAC 地址匹配</td></tr>
+      <tr><td>-m iprange</td><td>依 IP 範圍匹配</td></tr>
+    </tbody>
+  </table>
+
+  <h3>練習範例</h3>
+  <ol>
+    <li>在 TCP/8080 啟動 web server，阻擋該端口流量</li>
+    <li>允許 TCP/8080 流量</li>
+    <li>阻擋特定 IP 流量</li>
+    <li>允許特定 IP 流量</li>
+    <li>依協議阻擋流量</li>
+    <li>依協議允許流量</li>
+    <li>建立新鏈</li>
+    <li>將流量轉發到特定鏈</li>
+    <li>刪除特定規則</li>
+    <li>列出所有現有規則</li>
+  </ol>
+</section>
+
+
+<section id="ch28" class="chapter-card">
+  <h2 class="chapter-title">第二十八章：System Logs</h2>
+
+  <p>Linux 系統日誌包含系統與活動資訊，對於監控與排錯非常重要。分析日誌可協助識別安全弱點與異常活動，例如未授權登入、攻擊嘗試、明文憑證或異常檔案存取。</p>
+
+  <h3>日誌用途</h3>
+  <ul>
+    <li>監控系統行為、網路活動與使用者操作</li>
+    <li>檢查安全測試效果與入侵事件</li>
+    <li>透過適當設定、定期分析，提升系統安全</li>
+  </ul>
+
+  <h3>Linux 系統日誌類型</h3>
+  <ul>
+    <li>Kernel Logs (/var/log/kern.log)</li>
+    <li>System Logs (/var/log/syslog)</li>
+    <li>Authentication Logs (/var/log/auth.log)</li>
+    <li>Application Logs (如 /var/log/apache2/error.log)</li>
+    <li>Security Logs (如 /var/log/fail2ban.log, /var/log/ufw.log)</li>
+  </ul>
+
+  <h4>Kernel Logs</h4>
+  <p>包含核心事件、硬體驅動與系統呼叫。可協助發現過期或有漏洞的驅動，以及系統異常。</p>
+
+  <h4>System Logs</h4>
+  <p>紀錄系統層級事件，例如服務啟動、停止與系統重啟，通常存於 <code>/var/log/syslog</code>。</p>
+  <pre><code>Feb 28 2023 15:00:01 server CRON[2715]: (root) CMD (/usr/local/bin/backup.sh)
+Feb 28 2023 15:04:22 server sshd[3010]: Failed password for htb-student from 10.14.15.2 port 50223 ssh2
+Feb 28 2023 15:05:02 server kernel: [  138.303596] ata3.00: exception Emask 0x0 SAct 0x0 SErr 0x0 action 0x6 frozen
+Feb 28 2023 15:06:43 server apache2[2904]: 127.0.0.1 - - [28/Feb/2023:15:06:43 +0000] "GET /index.html HTTP/1.1" 200 13484 "-" "Mozilla/5.0 ..."
+Feb 28 2023 15:07:19 server sshd[3010]: Accepted password for htb-student from 10.14.15.2 port 50223 ssh2</code></pre>
+
+  <h4>Authentication Logs</h4>
+  <p>紀錄使用者認證嘗試，存於 <code>/var/log/auth.log</code>。</p>
+  <pre><code>Feb 28 2023 18:15:01 sshd[5678]: Accepted publickey for admin from 10.14.15.2 port 43210 ssh2
+Feb 28 2023 18:15:03 sudo: admin : TTY=pts/1 ; PWD=/home/admin ; USER=root ; COMMAND=/bin/bash
+Feb 28 2023 18:15:12 kernel: [  778.941871] firewall: unexpected traffic allowed on port 22
+Feb 28 2023 18:15:15 auditd[9876]: Audit daemon started successfully
+Feb 28 2023 18:15:18 systemd-logind[1234]: New session 4321 of user admin.</code></pre>
+
+  <h4>Application Logs</h4>
+  <p>紀錄特定應用程式活動，例如 Apache、MySQL。重要於目標應用程式的安全分析。</p>
+  <pre><code>2023-03-07T10:15:23+00:00 servername privileged.sh: htb-student accessed /root/hidden/api-keys.txt</code></pre>
+
+  <h4>常見服務存放位置</h4>
+  <table>
+    <thead>
+      <tr><th>服務</th><th>日誌位置</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Apache</td><td>/var/log/apache2/access.log</td></tr>
+      <tr><td>Nginx</td><td>/var/log/nginx/access.log</td></tr>
+      <tr><td>OpenSSH</td><td>/var/log/auth.log (Ubuntu), /var/log/secure (CentOS/RHEL)</td></tr>
+      <tr><td>MySQL</td><td>/var/log/mysql/mysql.log</td></tr>
+      <tr><td>PostgreSQL</td><td>/var/log/postgresql/postgresql-version-main.log</td></tr>
+      <tr><td>Systemd</td><td>/var/log/journal/</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Security Logs</h4>
+  <p>紀錄安全事件，例如 Fail2ban、UFW 以及系統變更事件，可協助滲透測試與安全評估。</p>
+
+  <p>日誌可透過 Linux 工具如 <code>tail</code>、<code>grep</code>、<code>sed</code> 等進行分析，並可結合圖形化日誌檢視工具使用。</p>
+</section>
+
+<section id="ch29" class="chapter-card">
+  <h2 class="chapter-title">第二十九章：Solaris</h2>
+
+  <p>Solaris 是 Sun Microsystems（後被 Oracle 收購）開發的 Unix 系統，以穩定、可擴展、高階硬體支援聞名，常用於企業環境的關鍵應用，如資料庫、雲端運算與虛擬化。</p>
+
+  <h3>Solaris vs Linux 發行版</h3>
+  <p>主要差異：</p>
+  <ul>
+    <li>Solaris 為專有系統，源碼不公開；Linux 多為開源。</li>
+    <li>Linux 常用 ZFS，支援壓縮、快照與高擴展性；Solaris 使用 Service Management Facility (SMF) 提供可靠性與可用性。</li>
+    <li>Solaris 提供 IPS 套件管理、RBAC 權限控管與強化安全功能。</li>
+  </ul>
+
+  <h3>Solaris 常用目錄</h3>
+  <table>
+    <thead>
+      <tr><th>目錄</th><th>說明</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>/</td><td>根目錄，包含其他所有目錄與檔案</td></tr>
+      <tr><td>/bin</td><td>基本系統二進位檔</td></tr>
+      <tr><td>/boot</td><td>開機相關檔案，如 boot loader 與 kernel 映像檔</td></tr>
+      <tr><td>/dev</td><td>裝置檔</td></tr>
+      <tr><td>/etc</td><td>系統設定檔</td></tr>
+      <tr><td>/home</td><td>使用者主目錄</td></tr>
+      <tr><td>/kernel</td><td>核心模組與相關檔案</td></tr>
+      <tr><td>/lib</td><td>程式庫</td></tr>
+      <tr><td>/lost+found</td><td>檔案系統修復後的檔案</td></tr>
+      <tr><td>/mnt</td><td>暫時掛載檔案系統</td></tr>
+      <tr><td>/opt</td><td>可選軟體套件</td></tr>
+      <tr><td>/proc</td><td>系統進程與核心狀態檔案</td></tr>
+      <tr><td>/sbin</td><td>系統管理二進位檔</td></tr>
+      <tr><td>/tmp</td><td>暫存檔</td></tr>
+      <tr><td>/usr</td><td>系統級唯讀資料與程式</td></tr>
+      <tr><td>/var</td><td>變動資料檔，如日誌、郵件</td></tr>
+    </tbody>
+  </table>
+
+  <h3>系統資訊</h3>
+  <p>Linux 使用 <code>uname -a</code> 查看系統資訊：</p>
+  <pre><code>Bryan4698@htb[/htb]$ uname -a
+Linux ubuntu 5.4.0-1045 #48-Ubuntu SMP Fri Jan 15 10:47:29 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux</code></pre>
+
+  <p>Solaris 使用 <code>showrev -a</code> 查看更詳細資訊：</p>
+  <pre><code>$ showrev -a
+Hostname: solaris
+Kernel architecture: sun4u
+OS version: Solaris 10 8/07 s10s_u4wos_12b SPARC
+Application architecture: sparc
+Hardware provider: Sun_Microsystems
+Domain: sun.com
+Kernel version: SunOS 5.10 Generic_139555-08</code></pre>
+
+  <h3>安裝套件</h3>
+  <p>Linux Ubuntu:</p>
+  <pre><code>Bryan4698@htb[/htb]$ sudo apt-get install apache2</code></pre>
+
+  <p>Solaris:</p>
+  <pre><code>$ pkgadd -d SUNWapchr</code></pre>
+
+  <h3>權限管理</h3>
+  <p>更改檔案權限：</p>
+  <pre><code>Bryan4698@htb[/htb]$ chmod 700 filename</code></pre>
+
+  <p>尋找 SUID 檔案：</p>
+  <pre><code>Linux: Bryan4698@htb[/htb]$ find / -perm 4000
+Solaris: $ find / -perm -4000</code></pre>
+
+  <h3>NFS 設定</h3>
+  <p>Solaris NFS 分享目錄：</p>
+  <pre><code>$ share -F nfs -o rw /export/home
+$ mount -F nfs 10.129.15.122:/nfs_share /mnt/local</code></pre>
+
+  <p>設定檔 /etc/dfs/dfstab:</p>
+  <pre><code># cat /etc/dfs/dfstab
+share -F nfs -o rw /export/home</code></pre>
+
+  <h3>進程映射</h3>
+  <p>Linux 使用 <code>lsof</code>：</p>
+  <pre><code>Bryan4698@htb[/htb]$ sudo lsof -c apache2</code></pre>
+
+  <p>Solaris 使用 <code>pfiles</code>：</p>
+  <pre><code>$ pfiles `pgrep httpd`</code></pre>
+
+  <h3>可執行檔存取與追蹤系統呼叫</h3>
+  <p>Solaris 使用 <code>truss</code>：</p>
+  <pre><code>$ truss ls
+execve("/usr/bin/ls", 0xFFBFFDC4, 0xFFBFFDC8)  argc = 1
+...SNIP...</code></pre>
+
+  <p>Linux Ubuntu 使用 <code>strace</code>：</p>
+  <pre><code>Bryan4698@htb[/htb]$ sudo strace -p `pgrep apache2`</code></pre>
+
+  <p>差異：truss 可追蹤子行程及訊號，strace 則無法。</p>
+</section>
+
+
+<section id="ch30" class="chapter-card">
+  <h2 class="chapter-title">第三十章：Shortcuts</h2>
+
+  <p>Linux 提供許多快捷鍵，可以加快操作速度、減少輸入，甚至減少使用滑鼠的需求。</p>
+
+  <h3>Auto-Complete</h3>
+  <ul>
+    <li><strong>[TAB]</strong> - 自動補全。根據已輸入內容提供建議，如目錄名稱、命令或選項。</li>
+  </ul>
+
+  <h3>Cursor Movement</h3>
+  <ul>
+    <li><strong>[CTRL] + A</strong> - 移動光標到行首</li>
+    <li><strong>[CTRL] + E</strong> - 移動光標到行尾</li>
+    <li><strong>[CTRL] + [←] / [→]</strong> - 跳至前/後單字開頭</li>
+    <li><strong>[ALT] + B / F</strong> - 向後/向前跳一個單字</li>
+  </ul>
+
+  <h3>Erase The Current Line</h3>
+  <ul>
+    <li><strong>[CTRL] + U</strong> - 刪除光標到行首的所有內容</li>
+    <li><strong>[CTRL] + K</strong> - 刪除光標到行尾的所有內容</li>
+    <li><strong>[CTRL] + W</strong> - 刪除光標前的單字</li>
+  </ul>
+
+  <h3>Paste Erased Contents</h3>
+  <ul>
+    <li><strong>[CTRL] + Y</strong> - 貼上被刪除的文字或單字</li>
+  </ul>
+
+  <h3>Ends Task</h3>
+  <ul>
+    <li><strong>[CTRL] + C</strong> - 終止當前任務/程序（發送 SIGINT 信號）</li>
+  </ul>
+
+  <h3>End-of-File (EOF)</h3>
+  <ul>
+    <li><strong>[CTRL] + D</strong> - 關閉 STDIN 管道，也稱 EOF 或 End-of-Transmission</li>
+  </ul>
+
+  <h3>Clear Terminal</h3>
+  <ul>
+    <li><strong>[CTRL] + L</strong> - 清除終端畫面（或使用 <code>clear</code> 命令）</li>
+  </ul>
+
+  <h3>Background a Process</h3>
+  <ul>
+    <li><strong>[CTRL] + Z</strong> - 暫停當前程序（發送 SIGTSTP 信號）</li>
+  </ul>
+
+  <h3>Search Through Command History</h3>
+  <ul>
+    <li><strong>[CTRL] + R</strong> - 搜尋命令歷史，匹配已輸入的指令</li>
+    <li><strong>[↑] / [↓]</strong> - 上/下翻歷史命令</li>
+  </ul>
+
+  <h3>Switch Between Applications</h3>
+  <ul>
+    <li><strong>[ALT] + [TAB]</strong> - 切換已開啟的應用程式</li>
+  </ul>
+
+  <h3>Zoom</h3>
+  <ul>
+    <li><strong>[CTRL] + [+]</strong> - 放大</li>
+    <li><strong>[CTRL] + [-]</strong> - 縮小</li>
+  </ul>
+</section>
+
+  </div>
+</body>
+</html>
